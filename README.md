@@ -13,7 +13,7 @@ An operations-focused delivery management API built with Spring Boot.
 
 ## Status / 진행 상태
 
-Project setup, order management, and driver management APIs are complete. Driver assignment is next.
+Project setup, order management, driver management, and delivery assignment APIs are complete. Delivery status updates are next.
 
-프로젝트 설정, 주문 관리, 배송 기사 관리 API 구현을 완료했습니다. 다음 단계는 배송 기사 배정입니다.
+프로젝트 설정, 주문 관리, 배송 기사 관리, 배송 배정 API 구현을 완료했습니다. 다음 단계는 배송 상태 변경입니다.
 

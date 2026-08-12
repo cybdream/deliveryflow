@@ -58,8 +58,8 @@ flowchart LR
 | Phase | Scope | Status |
 |---|---|---|
 | 1 | Project setup; order creation and lookup API | Complete |
-| 2 | Driver registration and lookup; driver assignment | Registration and lookup complete |
-| 3 | Authentication, authorization, and delivery history | Planned |
+| 2 | Driver registration and lookup; driver assignment | Complete |
+| 3 | Delivery status updates and delivery history | Next |
 | 4 | Search, dashboard, and error handling | Planned |
 | 5 | Tests, Docker, CI/CD, and deployment | Planned |
 
