@@ -57,20 +57,20 @@ flowchart LR
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Project setup; order creation and lookup API | Planned |
-| 2 | Driver assignment and delivery status updates | Planned |
+| 1 | Project setup; order creation and lookup API | Complete |
+| 2 | Driver registration and lookup; driver assignment | Registration and lookup complete |
 | 3 | Authentication, authorization, and delivery history | Planned |
 | 4 | Search, dashboard, and error handling | Planned |
 | 5 | Tests, Docker, CI/CD, and deployment | Planned |
 
 ## Documentation
 
-- [Project Specification (English)](docs/deliveryflow-portfolio-spec.md)
+- [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
 - [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
 
 ## Running the Application
 
-The following command will be available once the application has been implemented:
+The current order and driver APIs can be run with the following command. Database connection settings are kept in the Git-ignored `application-local.properties` file:
 
 ```bash
 ./gradlew bootRun
