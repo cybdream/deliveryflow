@@ -1,6 +1,6 @@
 # DeliveryFlow
 
-[한국어](README.md)
+[한국어](README-ko.md)
 
 DeliveryFlow is an operations-focused delivery management API. It manages the delivery workflow from order reception and driver assignment to status updates and completion-history tracking.
 
@@ -101,3 +101,4 @@ src/main/java/com/deliveryflow
 - Notification capability
 - Customer-facing tracking UI
 - Deployment monitoring and log management
+

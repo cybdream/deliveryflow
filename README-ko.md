@@ -1,4 +1,6 @@
-# DeliveryFlow`r`n`r`n[English](README-en.md)
+# DeliveryFlow
+
+[English](README-en.md)
 
 배송 접수부터 기사 배정, 배송 상태 관리, 완료 이력 조회까지 지원하는 배송 운영 관리 API 프로젝트입니다.
 
@@ -64,7 +66,7 @@ flowchart LR
 ## 문서
 
 - [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
-- [Project Specification (English)](docs/deliveryflow-portfolio-spec.md)
+- [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
 
 ## 실행 방법
 
@@ -99,4 +101,5 @@ src/main/java/com/deliveryflow
 - 알림 기능
 - 고객용 배송 조회 화면
 - 배포 환경 모니터링 및 로그 관리
+
 
