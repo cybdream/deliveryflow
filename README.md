@@ -9,11 +9,11 @@ An operations-focused delivery management API built with Spring Boot.
 - [한국어 README](README-ko.md)
 - [English README](README-en.md)
 - [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
-- [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
+- [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)`r`n- [구현 현황](docs/implementation-status-ko.md)
 
 ## Status / 진행 상태
 
-Project setup, order management, driver management, and delivery assignment APIs are complete. Delivery status updates are next.
+Project setup, order management, driver management, delivery assignment, and delivery status/history APIs are complete. Authentication and authorization are next.
 
-프로젝트 설정, 주문 관리, 배송 기사 관리, 배송 배정 API 구현을 완료했습니다. 다음 단계는 배송 상태 변경입니다.
+프로젝트 설정, 주문 관리, 배송 기사 관리, 배송 배정, 배송 상태·이력 API 구현을 완료했습니다. 다음 단계는 인증과 권한 관리입니다.
 

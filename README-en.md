@@ -59,14 +59,14 @@ flowchart LR
 |---|---|---|
 | 1 | Project setup; order creation and lookup API | Complete |
 | 2 | Driver registration and lookup; driver assignment | Complete |
-| 3 | Delivery status updates and delivery history | Next |
-| 4 | Search, dashboard, and error handling | Planned |
+| 3 | Delivery status updates and delivery history | Complete |
+| 4 | Authentication, authorization, search, dashboard, and error handling | Next |
 | 5 | Tests, Docker, CI/CD, and deployment | Planned |
 
 ## Documentation
 
 - [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
-- [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
+- [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)`r`n- [Implementation Status (Korean)](docs/implementation-status-ko.md)
 
 ## Running the Application
 
