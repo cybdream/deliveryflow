@@ -1,12 +1,14 @@
 package com.deliveryflow.auth.api;
 
 import com.deliveryflow.auth.application.LoginService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Authentication", description = "Login and JWT access token issuance")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -18,3 +20,4 @@ public class AuthController {
         return loginService.login(request);
     }
 }
+
