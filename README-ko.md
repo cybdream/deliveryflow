@@ -64,7 +64,8 @@ flowchart LR
 | 5 | 요청 인증·역할 권한 관리 | 완료 |
 | 6 | 배송 목록·검색 | 완료 |
 | 7 | 표준 오류 응답 | 완료 |
-| 8 | 운영 대시보드 | 다음 단계 |
+| 8 | 운영 대시보드 | 완료 |
+| 9 | Docker와 API 문서화 | 다음 단계 |
 | 5 | 테스트·Docker·CI/CD 배포 | 진행 예정 |
 
 ## 문서
@@ -77,6 +78,7 @@ flowchart LR
 - [배송 목록 및 검색 API](docs/delivery-list-api-ko.md)
 - [표준 오류 응답](docs/error-response-ko.md)
 - [오류 메시지 언어 선택](docs/error-message-language-ko.md)
+- [운영 대시보드 API](docs/dashboard-api-ko.md)
 
 ## 실행 방법
 

@@ -17,10 +17,11 @@ An operations-focused delivery management API built with Spring Boot.
 - [배송 목록 및 검색 API](docs/delivery-list-api-ko.md)
 - [표준 오류 응답](docs/error-response-ko.md)
 - [오류 메시지 언어 선택](docs/error-message-language-ko.md)
+- [운영 대시보드 API](docs/dashboard-api-ko.md)
 
 ## Status / 진행 상태
 
-Project setup, order management, driver management, delivery assignment, and delivery status/history APIs are complete. JWT login, request authentication, and role authorization are complete. Delivery list/search APIs are complete. Standardized error responses are complete. The operational dashboard is next.
+Project setup, order management, driver management, delivery assignment, and delivery status/history APIs are complete. JWT login, request authentication, and role authorization are complete. Delivery list/search APIs are complete. Standardized error responses are complete. The operational dashboard is complete. Docker and API documentation are next.
 
-프로젝트 설정, 주문 관리, 배송 기사 관리, 배송 배정, 배송 상태·이력 API 구현을 완료했습니다. JWT 로그인, 요청 인증, 역할 권한 관리를 구현했습니다. 배송 목록·검색 API를 구현했습니다. 표준 오류 응답을 구현했습니다. 다음 단계는 운영 대시보드입니다.
+프로젝트 설정, 주문 관리, 배송 기사 관리, 배송 배정, 배송 상태·이력 API 구현을 완료했습니다. JWT 로그인, 요청 인증, 역할 권한 관리를 구현했습니다. 배송 목록·검색 API를 구현했습니다. 표준 오류 응답을 구현했습니다. 운영 대시보드를 구현했습니다. 다음 단계는 Docker와 API 문서화입니다.
 

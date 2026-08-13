@@ -64,7 +64,8 @@ flowchart LR
 | 5 | Request authentication and role authorization | Complete |
 | 6 | Delivery list and search | Complete |
 | 7 | Standardized error responses | Complete |
-| 8 | Operational dashboard | Next |
+| 8 | Operational dashboard | Complete |
+| 9 | Docker and API documentation | Next |
 | 5 | Tests, Docker, CI/CD, and deployment | Planned |
 
 ## Documentation
@@ -77,6 +78,7 @@ flowchart LR
 - [Delivery List and Search API (Korean)](docs/delivery-list-api-ko.md)
 - [Standard Error Responses (Korean)](docs/error-response-ko.md)
 - [Error Message Language Selection (Korean)](docs/error-message-language-ko.md)
+- [Operational Dashboard API (Korean)](docs/dashboard-api-ko.md)
 
 ## Running the Application
 
