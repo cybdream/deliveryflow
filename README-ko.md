@@ -63,7 +63,8 @@ flowchart LR
 | 4 | JWT 로그인 | 완료 |
 | 5 | 요청 인증·역할 권한 관리 | 완료 |
 | 6 | 배송 목록·검색 | 완료 |
-| 7 | 대시보드·표준 오류 응답 | 다음 단계 |
+| 7 | 표준 오류 응답 | 완료 |
+| 8 | 운영 대시보드 | 다음 단계 |
 | 5 | 테스트·Docker·CI/CD 배포 | 진행 예정 |
 
 ## 문서
@@ -74,6 +75,7 @@ flowchart LR
 - [로그인 API](docs/login-api-ko.md)
 - [JWT 인증과 역할 권한](docs/jwt-authorization-ko.md)
 - [배송 목록 및 검색 API](docs/delivery-list-api-ko.md)
+- [표준 오류 응답](docs/error-response-ko.md)
 
 ## 실행 방법
 
