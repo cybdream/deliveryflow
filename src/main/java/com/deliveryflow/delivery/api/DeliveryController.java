@@ -12,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,11 +33,11 @@ public class DeliveryController {
         return ResponseEntity.created(URI.create("/api/v1/deliveries/" + response.id())).body(response);
     }
     @GetMapping
-    public Page<DeliveryResponse> findAll(@RequestParam(required = false) DeliveryStatus status, @RequestParam(required = false) Long driverId, @RequestParam(required = false) LocalDate scheduledDate, @PageableDefault(size = 20, sort = "assignedAt") Pageable pageable) {
+    public Page<DeliveryResponse> findAll(@RequestParam(required = false) DeliveryStatus status, @RequestParam(required = false) Long driverId, @RequestParam(required = false) LocalDate scheduledDate, @ParameterObject @PageableDefault(size = 20, sort = "assignedAt") Pageable pageable) {
         return deliveryService.findAll(status, driverId, scheduledDate, pageable);
     }
     @GetMapping("/me")
-    public Page<DeliveryResponse> findMine(Authentication authentication, @RequestParam(required = false) DeliveryStatus status, @RequestParam(required = false) LocalDate scheduledDate, @PageableDefault(size = 20, sort = "assignedAt") Pageable pageable) {
+    public Page<DeliveryResponse> findMine(Authentication authentication, @RequestParam(required = false) DeliveryStatus status, @RequestParam(required = false) LocalDate scheduledDate, @ParameterObject @PageableDefault(size = 20, sort = "assignedAt") Pageable pageable) {
         return deliveryService.findMine(authentication.getName(), status, scheduledDate, pageable);
     }
     @PatchMapping("/{deliveryId}/status")
@@ -49,3 +50,4 @@ public class DeliveryController {
     }
     private boolean isAdmin(Authentication authentication) { return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch("ROLE_ADMIN"::equals); }
 }
+

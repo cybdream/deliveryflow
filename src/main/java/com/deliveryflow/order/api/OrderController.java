@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +34,8 @@ public class OrderController {
     @GetMapping
     public Page<OrderResponse> findAll(
             @RequestParam(required = false) String keyword,
-            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
         return orderService.findAll(keyword, pageable);
     }
 }
+
