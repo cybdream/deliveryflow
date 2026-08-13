@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +22,9 @@ public class User {
 
     @Column(nullable = false, length = 50)
     private String name;
+
+    @Column(name = "password_hash", length = 100)
+    private String passwordHash;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -34,12 +36,16 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected User() {
-    }
+    protected User() { }
 
     public User(String email, String name, UserRole role, boolean active, LocalDateTime createdAt) {
+        this(email, name, null, role, active, createdAt);
+    }
+
+    public User(String email, String name, String passwordHash, UserRole role, boolean active, LocalDateTime createdAt) {
         this.email = email;
         this.name = name;
+        this.passwordHash = passwordHash;
         this.role = role;
         this.active = active;
         this.createdAt = createdAt;
@@ -48,6 +54,7 @@ public class User {
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public String getName() { return name; }
+    public String getPasswordHash() { return passwordHash; }
     public UserRole getRole() { return role; }
     public boolean isActive() { return active; }
     public LocalDateTime getCreatedAt() { return createdAt; }

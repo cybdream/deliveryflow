@@ -1,0 +1,12 @@
+# Copy this file to application-local.properties only if you need a fresh local setup.
+# Keep the real application-local.properties out of Git and replace all placeholder values.
+spring.datasource.url=jdbc:postgresql://localhost:5432/deliveryflow
+spring.datasource.username=postgres
+spring.datasource.password=YOUR_POSTGRES_PASSWORD
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# Optional: local accounts are created only once, when no user has the same email.
+app.bootstrap.admin-email=admin@deliveryflow.local
+app.bootstrap.admin-password=CHANGE_THIS_ADMIN_PASSWORD
+app.bootstrap.driver-email=driver@deliveryflow.local
+app.bootstrap.driver-password=CHANGE_THIS_DRIVER_PASSWORD

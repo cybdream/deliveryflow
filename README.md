@@ -9,7 +9,8 @@ An operations-focused delivery management API built with Spring Boot.
 - [한국어 README](README-ko.md)
 - [English README](README-en.md)
 - [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
-- [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)`r`n- [구현 현황](docs/implementation-status-ko.md)
+- [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
+- [구현 현황](docs/implementation-status-ko.md)`r`n- [Local Account Setup](docs/local-account-setup.md)
 
 ## Status / 진행 상태
 

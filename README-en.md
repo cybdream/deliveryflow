@@ -66,7 +66,8 @@ flowchart LR
 ## Documentation
 
 - [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
-- [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)`r`n- [Implementation Status (Korean)](docs/implementation-status-ko.md)
+- [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
+- [Implementation Status (Korean)](docs/implementation-status-ko.md)
 
 ## Running the Application
 
