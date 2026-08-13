@@ -55,13 +55,13 @@ class DeliveryServiceTest {
     void changesAssignedDeliveryToInDelivery() {
         Delivery delivery = new Delivery(new Order("ORD-20260813-1001", "김민지", "010-1234-5678", "서울", LocalDate.now(), LocalDateTime.now()), new User("driver1@deliveryflow.com", "홍길동", UserRole.DRIVER, true, LocalDateTime.now()), LocalDate.now(), LocalDateTime.now());
         when(deliveryRepository.findById(1L)).thenReturn(Optional.of(delivery));
-        DeliveryResponse response = deliveryService.updateStatus(1L, new UpdateDeliveryStatusRequest(DeliveryStatus.IN_DELIVERY, null, "홍길동"));
+        DeliveryResponse response = deliveryService.updateStatus(1L, new UpdateDeliveryStatusRequest(DeliveryStatus.IN_DELIVERY, null), "driver1@deliveryflow.com", false);
         assertThat(response.status()).isEqualTo("IN_DELIVERY");
     }
 
     @Test
     void requiresReasonWhenDeliveryIsPutOnHold() {
-        assertThatThrownBy(() -> deliveryService.updateStatus(1L, new UpdateDeliveryStatusRequest(DeliveryStatus.ON_HOLD, null, "홍길동")))
+        assertThatThrownBy(() -> deliveryService.updateStatus(1L, new UpdateDeliveryStatusRequest(DeliveryStatus.ON_HOLD, null), "driver1@deliveryflow.com", false))
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("ON_HOLD 상태 변경에는 사유가 필요합니다.");
     }
 
@@ -71,7 +71,8 @@ class DeliveryServiceTest {
         delivery.changeStatus(DeliveryStatus.IN_DELIVERY, LocalDateTime.now());
         delivery.changeStatus(DeliveryStatus.DELIVERED, LocalDateTime.now());
         when(deliveryRepository.findById(1L)).thenReturn(Optional.of(delivery));
-        assertThatThrownBy(() -> deliveryService.updateStatus(1L, new UpdateDeliveryStatusRequest(DeliveryStatus.ON_HOLD, "재배송 요청", "홍길동")))
+        assertThatThrownBy(() -> deliveryService.updateStatus(1L, new UpdateDeliveryStatusRequest(DeliveryStatus.ON_HOLD, "재배송 요청"), "driver1@deliveryflow.com", false))
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("DELIVERED 상태에서 ON_HOLD 상태로 변경할 수 없습니다.");
     }
 }
+

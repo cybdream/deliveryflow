@@ -60,14 +60,18 @@ flowchart LR
 | 1 | Project setup; order creation and lookup API | Complete |
 | 2 | Driver registration and lookup; driver assignment | Complete |
 | 3 | Delivery status updates and delivery history | Complete |
-| 4 | JWT login | Complete |`r`n| 5 | Request authentication, role authorization, search, dashboard, and error handling | Next |
+| 4 | JWT login | Complete |
+| 5 | Request authentication and role authorization | Complete |
+| 6 | Search, dashboard, and standardized error responses | Next |
 | 5 | Tests, Docker, CI/CD, and deployment | Planned |
 
 ## Documentation
 
 - [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
 - [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
-- [Implementation Status (Korean)](docs/implementation-status-ko.md)`r`n- [Login API (Korean)](docs/login-api-ko.md)
+- [Implementation Status (Korean)](docs/implementation-status-ko.md)
+- [Login API (Korean)](docs/login-api-ko.md)
+- [JWT Authentication and Authorization (Korean)](docs/jwt-authorization-ko.md)
 
 ## Running the Application
 

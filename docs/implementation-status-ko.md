@@ -10,7 +10,9 @@
 | 배송 기사 목록 조회 | `GET` | `/api/v1/drivers` |
 | 배송 배정 | `POST` | `/api/v1/deliveries` |
 | 배송 상태 변경 | `PATCH` | `/api/v1/deliveries/{deliveryId}/status` |
-| 배송 이력 조회 | `GET` | `/api/v1/deliveries/{deliveryId}/histories` |`r`n| 로그인 및 JWT 발급 | `POST` | `/api/v1/auth/login` |
+| 배송 이력 조회 | `GET` | `/api/v1/deliveries/{deliveryId}/histories` |
+| 로그인 및 JWT 발급 | `POST` | `/api/v1/auth/login` |
+| JWT 인증 및 역할 권한 | - | 보호된 API 전체 |
 
 ## 상태 변경 예시
 

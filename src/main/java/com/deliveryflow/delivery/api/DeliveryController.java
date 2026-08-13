@@ -5,6 +5,8 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +26,14 @@ public class DeliveryController {
         return ResponseEntity.created(URI.create("/api/v1/deliveries/" + response.id())).body(response);
     }
     @PatchMapping("/{deliveryId}/status")
-    public DeliveryResponse updateStatus(@PathVariable Long deliveryId, @Valid @RequestBody UpdateDeliveryStatusRequest request) { return deliveryService.updateStatus(deliveryId, request); }
+    public DeliveryResponse updateStatus(@PathVariable Long deliveryId, @Valid @RequestBody UpdateDeliveryStatusRequest request, Authentication authentication) {
+        return deliveryService.updateStatus(deliveryId, request, authentication.getName(), isAdmin(authentication));
+    }
     @GetMapping("/{deliveryId}/histories")
-    public List<DeliveryHistoryResponse> findHistories(@PathVariable Long deliveryId) { return deliveryService.findHistories(deliveryId); }
+    public List<DeliveryHistoryResponse> findHistories(@PathVariable Long deliveryId, Authentication authentication) {
+        return deliveryService.findHistories(deliveryId, authentication.getName(), isAdmin(authentication));
+    }
+    private boolean isAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch("ROLE_ADMIN"::equals);
+    }
 }

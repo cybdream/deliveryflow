@@ -39,18 +39,23 @@ public class DeliveryService {
     }
 
     @Transactional
-    public DeliveryResponse updateStatus(Long deliveryId, UpdateDeliveryStatusRequest request) {
+    public DeliveryResponse updateStatus(Long deliveryId, UpdateDeliveryStatusRequest request, String actorEmail, boolean admin) {
         if (requiresReason(request.status()) && (request.reason() == null || request.reason().isBlank())) { throw new IllegalArgumentException(request.status() + " 상태 변경에는 사유가 필요합니다."); }
         Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() -> new IllegalArgumentException("배송 정보를 찾을 수 없습니다."));
+        verifyDeliveryAccess(delivery, actorEmail, admin);
         LocalDateTime changedAt = LocalDateTime.now();
         DeliveryStatus previousStatus = delivery.changeStatus(request.status(), changedAt);
-        deliveryHistoryRepository.save(new DeliveryHistory(delivery, "STATUS_CHANGED", previousStatus, request.status(), request.changedBy(), request.reason(), changedAt));
+        deliveryHistoryRepository.save(new DeliveryHistory(delivery, "STATUS_CHANGED", previousStatus, request.status(), actorEmail, request.reason(), changedAt));
         return DeliveryResponse.from(delivery);
     }
 
-    public List<DeliveryHistoryResponse> findHistories(Long deliveryId) {
+    public List<DeliveryHistoryResponse> findHistories(Long deliveryId, String actorEmail, boolean admin) {
         if (!deliveryRepository.existsById(deliveryId)) { throw new IllegalArgumentException("배송 정보를 찾을 수 없습니다."); }
         return deliveryHistoryRepository.findByDeliveryIdOrderByChangedAtAsc(deliveryId).stream().map(DeliveryHistoryResponse::from).toList();
     }
+    private void verifyDeliveryAccess(Delivery delivery, String actorEmail, boolean admin) {
+        if (!admin && !delivery.getDriver().getEmail().equals(actorEmail)) { throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "본인에게 배정된 배송만 조회하거나 변경할 수 있습니다."); }
+    }
     private boolean requiresReason(DeliveryStatus status) { return status == DeliveryStatus.ON_HOLD || status == DeliveryStatus.CANCELLED; }
 }
+
