@@ -66,6 +66,8 @@ flowchart LR
 | 7 | 표준 오류 응답 | 완료 |
 | 8 | 운영 대시보드 | 완료 |
 | 9 | Docker와 Swagger API 문서화 | 완료 |
+| 10 | 통합 테스트와 GitHub Actions CI | 완료 |
+| 11 | Railway 운영 배포 설정 | 완료 |
 | 5 | 테스트·Docker·CI/CD 배포 | 진행 예정 |
 
 ## 문서
@@ -81,6 +83,7 @@ flowchart LR
 - [운영 대시보드 API](docs/dashboard-api-ko.md)
 - [Swagger와 Docker 실행](docs/swagger-and-docker-ko.md)
 - [GitHub Actions 자동 테스트](docs/github-actions-ci-ko.md)
+- [Railway 배포 안내](docs/railway-deployment-ko.md)
 
 ## 실행 방법
 

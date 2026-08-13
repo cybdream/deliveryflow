@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@Profile({"local", "docker"})
+@Profile({"local", "docker", "prod"})
 public class LocalAccountInitializer {
     @Bean
     CommandLineRunner createLocalAccounts(UserRepository repository, PasswordEncoder encoder,

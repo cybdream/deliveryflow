@@ -49,6 +49,12 @@ class AuthOrderIntegrationTest {
     }
 
     @Test
+    void healthEndpointIsPublic() throws Exception {
+        mockMvc.perform(get("/api/v1/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+    }
+    @Test
     void loginIssuesAccessToken() throws Exception {
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
