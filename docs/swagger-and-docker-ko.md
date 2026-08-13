@@ -28,7 +28,18 @@ Docker Desktop 설치 후, 프로젝트 폴더에서 다음을 실행합니다.
 Copy-Item .env.example .env
 ```
 
-`.env` 파일의 `POSTGRES_PASSWORD`와 `APP_JWT_SECRET`을 실제 값으로 바꾼 뒤 실행합니다.
+`.env` 파일에서 아래 값을 실제 값으로 바꿉니다. 이 파일은 Git에 올리지 않습니다.
+
+```text
+POSTGRES_PASSWORD=PostgreSQL 비밀번호
+APP_JWT_SECRET=32바이트 이상 무작위 값의 Base64 문자열
+APP_BOOTSTRAP_ADMIN_EMAIL=admin@deliveryflow.local
+APP_BOOTSTRAP_ADMIN_PASSWORD=관리자 로그인 비밀번호
+APP_BOOTSTRAP_DRIVER_EMAIL=driver@deliveryflow.local
+APP_BOOTSTRAP_DRIVER_PASSWORD=기사 로그인 비밀번호
+```
+
+관리자와 기사 계정은 해당 이메일이 데이터베이스에 없을 때 한 번만 만들어집니다. 이미 만들어진 계정의 비밀번호를 바꾸려면, 초기화 값 대신 별도의 비밀번호 변경 기능을 구현하는 방식이 적절합니다.
 
 ```powershell
 docker compose up --build
@@ -45,3 +56,4 @@ docker compose down
 ```
 
 데이터베이스 데이터까지 지우려면 `docker compose down -v`를 사용합니다.
+
