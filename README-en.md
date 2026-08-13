@@ -62,7 +62,8 @@ flowchart LR
 | 3 | Delivery status updates and delivery history | Complete |
 | 4 | JWT login | Complete |
 | 5 | Request authentication and role authorization | Complete |
-| 6 | Search, dashboard, and standardized error responses | Next |
+| 6 | Delivery list and search | Complete |
+| 7 | Dashboard and standardized error responses | Next |
 | 5 | Tests, Docker, CI/CD, and deployment | Planned |
 
 ## Documentation
@@ -72,6 +73,7 @@ flowchart LR
 - [Implementation Status (Korean)](docs/implementation-status-ko.md)
 - [Login API (Korean)](docs/login-api-ko.md)
 - [JWT Authentication and Authorization (Korean)](docs/jwt-authorization-ko.md)
+- [Delivery List and Search API (Korean)](docs/delivery-list-api-ko.md)
 
 ## Running the Application
 

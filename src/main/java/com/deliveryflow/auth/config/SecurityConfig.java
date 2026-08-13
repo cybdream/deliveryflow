@@ -24,6 +24,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/orders/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/drivers/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/deliveries").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/deliveries").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/deliveries/me").hasRole("DRIVER")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/deliveries/*/status").hasAnyRole("ADMIN", "DRIVER")
                         .requestMatchers(HttpMethod.GET, "/api/v1/deliveries/*/histories").hasAnyRole("ADMIN", "DRIVER")
                         .anyRequest().authenticated())
@@ -31,3 +33,4 @@ public class SecurityConfig {
                 .build();
     }
 }
+

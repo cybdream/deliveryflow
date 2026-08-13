@@ -9,12 +9,17 @@ import com.deliveryflow.delivery.domain.DeliveryHistory;
 import com.deliveryflow.delivery.domain.DeliveryHistoryRepository;
 import com.deliveryflow.delivery.domain.DeliveryRepository;
 import com.deliveryflow.delivery.domain.DeliveryStatus;
+import com.deliveryflow.delivery.domain.DeliverySpecifications;
 import com.deliveryflow.order.domain.Order;
 import com.deliveryflow.order.domain.OrderRepository;
 import com.deliveryflow.user.domain.User;
 import com.deliveryflow.user.domain.UserRepository;
 import com.deliveryflow.user.domain.UserRole;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +61,22 @@ public class DeliveryService {
     private void verifyDeliveryAccess(Delivery delivery, String actorEmail, boolean admin) {
         if (!admin && !delivery.getDriver().getEmail().equals(actorEmail)) { throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "본인에게 배정된 배송만 조회하거나 변경할 수 있습니다."); }
     }
+    public Page<DeliveryResponse> findAll(DeliveryStatus status, Long driverId, LocalDate scheduledDate, Pageable pageable) {
+        Specification<Delivery> specification = Specification.allOf(
+                DeliverySpecifications.hasStatus(status),
+                DeliverySpecifications.hasDriverId(driverId),
+                DeliverySpecifications.hasScheduledDate(scheduledDate));
+        return deliveryRepository.findAll(specification, pageable).map(DeliveryResponse::from);
+    }
+
+    public Page<DeliveryResponse> findMine(String email, DeliveryStatus status, LocalDate scheduledDate, Pageable pageable) {
+        Specification<Delivery> specification = Specification.allOf(
+                DeliverySpecifications.hasDriverEmail(email),
+                DeliverySpecifications.hasStatus(status),
+                DeliverySpecifications.hasScheduledDate(scheduledDate));
+        return deliveryRepository.findAll(specification, pageable).map(DeliveryResponse::from);
+    }
+
     private boolean requiresReason(DeliveryStatus status) { return status == DeliveryStatus.ON_HOLD || status == DeliveryStatus.CANCELLED; }
 }
 

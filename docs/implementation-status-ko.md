@@ -13,6 +13,8 @@
 | 배송 이력 조회 | `GET` | `/api/v1/deliveries/{deliveryId}/histories` |
 | 로그인 및 JWT 발급 | `POST` | `/api/v1/auth/login` |
 | JWT 인증 및 역할 권한 | - | 보호된 API 전체 |
+| 전체 배송 목록·검색 | `GET` | `/api/v1/deliveries` |
+| 내 배송 목록·검색 | `GET` | `/api/v1/deliveries/me` |
 
 ## 상태 변경 예시
 
