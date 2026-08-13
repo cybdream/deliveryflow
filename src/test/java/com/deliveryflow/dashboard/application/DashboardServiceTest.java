@@ -21,7 +21,7 @@ class DashboardServiceTest {
             public DeliveryStatus getStatus() { return DeliveryStatus.IN_DELIVERY; }
             public long getCount() { return 2L; }
         };
-        when(repository.countByStatus(LocalDate.of(2026, 8, 13))).thenReturn(List.of(inDelivery));
+        when(repository.countByScheduledDateAndStatus(LocalDate.of(2026, 8, 13))).thenReturn(List.of(inDelivery));
 
         DeliveryStatusSummaryResponse response = service.summarize(LocalDate.of(2026, 8, 13));
 
@@ -29,3 +29,4 @@ class DashboardServiceTest {
         assertThat(response.statusCounts()).containsEntry("IN_DELIVERY", 2L).containsEntry("DELIVERED", 0L);
     }
 }
+

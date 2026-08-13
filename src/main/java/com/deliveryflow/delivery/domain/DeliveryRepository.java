@@ -10,11 +10,11 @@ import org.springframework.data.repository.query.Param;
 public interface DeliveryRepository extends JpaRepository<Delivery, Long>, JpaSpecificationExecutor<Delivery> {
     boolean existsByOrderId(Long orderId);
 
-    @Query("select d.status as status, count(d) as count from Delivery d where (:scheduledDate is null or d.scheduledDate = :scheduledDate) group by d.status")
-    List<DeliveryStatusCount> countByStatus(@Param("scheduledDate") LocalDate scheduledDate);
+    @Query("select d.status as status, count(d) as count from Delivery d group by d.status")
+    List<DeliveryStatusCount> countAllByStatus();
 
-    interface DeliveryStatusCount {
-        DeliveryStatus getStatus();
-        long getCount();
-    }
+    @Query("select d.status as status, count(d) as count from Delivery d where d.scheduledDate = :scheduledDate group by d.status")
+    List<DeliveryStatusCount> countByScheduledDateAndStatus(@Param("scheduledDate") LocalDate scheduledDate);
+
+    interface DeliveryStatusCount { DeliveryStatus getStatus(); long getCount(); }
 }

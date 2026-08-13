@@ -18,10 +18,11 @@ public class DashboardService {
     public DeliveryStatusSummaryResponse summarize(LocalDate scheduledDate) {
         Map<DeliveryStatus, Long> aggregated = new EnumMap<>(DeliveryStatus.class);
         for (DeliveryStatus status : DeliveryStatus.values()) aggregated.put(status, 0L);
-        deliveryRepository.countByStatus(scheduledDate).forEach(row -> aggregated.put(row.getStatus(), row.getCount()));
+        (scheduledDate == null ? deliveryRepository.countAllByStatus() : deliveryRepository.countByScheduledDateAndStatus(scheduledDate)).forEach(row -> aggregated.put(row.getStatus(), row.getCount()));
         Map<String, Long> counts = new java.util.LinkedHashMap<>();
         aggregated.forEach((status, count) -> counts.put(status.name(), count));
         long total = counts.values().stream().mapToLong(Long::longValue).sum();
         return new DeliveryStatusSummaryResponse(scheduledDate, total, counts);
     }
 }
+
