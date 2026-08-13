@@ -60,14 +60,14 @@ flowchart LR
 | 1 | 프로젝트 설정 및 주문 등록·조회 API | 완료 |
 | 2 | 배송 기사 등록·조회 및 기사 배정 | 완료 |
 | 3 | 배송 상태 변경 및 배송 이력 | 완료 |
-| 4 | 인증·권한 관리, 검색·대시보드·예외 처리 | 다음 단계 |
+| 4 | JWT 로그인 | 완료 |`r`n| 5 | 요청 인증·역할 권한 관리, 검색·대시보드·예외 처리 | 다음 단계 |
 | 5 | 테스트·Docker·CI/CD 배포 | 진행 예정 |
 
 ## 문서
 
 - [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
 - [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
-- [구현 현황](docs/implementation-status-ko.md)
+- [구현 현황](docs/implementation-status-ko.md)`r`n- [로그인 API](docs/login-api-ko.md)
 
 ## 실행 방법
 

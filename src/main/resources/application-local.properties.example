@@ -10,3 +10,7 @@ app.bootstrap.admin-email=admin@deliveryflow.local
 app.bootstrap.admin-password=CHANGE_THIS_ADMIN_PASSWORD
 app.bootstrap.driver-email=driver@deliveryflow.local
 app.bootstrap.driver-password=CHANGE_THIS_DRIVER_PASSWORD
+
+# JWT signing key: Base64-encoded value of at least 32 random bytes.
+app.jwt.secret=REPLACE_WITH_A_PRIVATE_BASE64_SECRET
+app.jwt.expiration=PT1H

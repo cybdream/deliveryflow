@@ -10,7 +10,7 @@
 | 배송 기사 목록 조회 | `GET` | `/api/v1/drivers` |
 | 배송 배정 | `POST` | `/api/v1/deliveries` |
 | 배송 상태 변경 | `PATCH` | `/api/v1/deliveries/{deliveryId}/status` |
-| 배송 이력 조회 | `GET` | `/api/v1/deliveries/{deliveryId}/histories` |
+| 배송 이력 조회 | `GET` | `/api/v1/deliveries/{deliveryId}/histories` |`r`n| 로그인 및 JWT 발급 | `POST` | `/api/v1/auth/login` |
 
 ## 상태 변경 예시
 
@@ -40,3 +40,4 @@ PATCH /api/v1/deliveries/1/status
 - 보류(`ON_HOLD`)와 취소(`CANCELLED`)에는 사유가 필요합니다.
 - 완료 또는 취소된 배송은 이후 상태를 바꿀 수 없습니다.
 - 배정 및 상태 변경마다 `delivery_histories`에 이력이 저장됩니다.
+
