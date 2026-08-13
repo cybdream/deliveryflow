@@ -12,10 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApiAccessDeniedHandler implements AccessDeniedHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ApiMessageService messages;
+    public ApiAccessDeniedHandler(ApiMessageService messages) { this.messages = messages; }
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(), ApiErrorResponse.of(403, "FORBIDDEN", "이 작업을 수행할 권한이 없습니다.", request.getRequestURI()));
+        objectMapper.writeValue(response.getOutputStream(), ApiErrorResponse.of(403, "FORBIDDEN", messages.get("error.forbidden", request.getLocale()), request.getRequestURI()));
     }
 }

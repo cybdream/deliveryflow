@@ -76,6 +76,7 @@ flowchart LR
 - [JWT Authentication and Authorization (Korean)](docs/jwt-authorization-ko.md)
 - [Delivery List and Search API (Korean)](docs/delivery-list-api-ko.md)
 - [Standard Error Responses (Korean)](docs/error-response-ko.md)
+- [Error Message Language Selection (Korean)](docs/error-message-language-ko.md)
 
 ## Running the Application
 

@@ -16,6 +16,7 @@ An operations-focused delivery management API built with Spring Boot.
 - [JWT 인증과 역할 권한](docs/jwt-authorization-ko.md)
 - [배송 목록 및 검색 API](docs/delivery-list-api-ko.md)
 - [표준 오류 응답](docs/error-response-ko.md)
+- [오류 메시지 언어 선택](docs/error-message-language-ko.md)
 
 ## Status / 진행 상태
 
