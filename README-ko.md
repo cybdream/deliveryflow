@@ -80,6 +80,7 @@ flowchart LR
 - [오류 메시지 언어 선택](docs/error-message-language-ko.md)
 - [운영 대시보드 API](docs/dashboard-api-ko.md)
 - [Swagger와 Docker 실행](docs/swagger-and-docker-ko.md)
+- [GitHub Actions 자동 테스트](docs/github-actions-ci-ko.md)
 
 ## 실행 방법
 
