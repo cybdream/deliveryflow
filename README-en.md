@@ -65,7 +65,7 @@ flowchart LR
 | 6 | Delivery list and search | Complete |
 | 7 | Standardized error responses | Complete |
 | 8 | Operational dashboard | Complete |
-| 9 | Docker and API documentation | Next |
+| 9 | Docker configuration and Swagger API documentation | Complete |
 | 5 | Tests, Docker, CI/CD, and deployment | Planned |
 
 ## Documentation
@@ -79,6 +79,7 @@ flowchart LR
 - [Standard Error Responses (Korean)](docs/error-response-ko.md)
 - [Error Message Language Selection (Korean)](docs/error-message-language-ko.md)
 - [Operational Dashboard API (Korean)](docs/dashboard-api-ko.md)
+- [Swagger and Docker Setup (Korean)](docs/swagger-and-docker-ko.md)
 
 ## Running the Application
 

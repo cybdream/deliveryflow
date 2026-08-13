@@ -38,3 +38,6 @@ out/
 
 # Local database configuration (never commit credentials)
 src/main/resources/application-local.properties
+
+# Docker secrets
+.env
