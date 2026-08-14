@@ -1,5 +1,7 @@
 # DeliveryFlow
 
+[![CI](https://github.com/cybdream/deliveryflow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cybdream/deliveryflow/actions/workflows/ci.yml)
+
 [한국어](README-ko.md)
 
 DeliveryFlow is an operations-focused delivery management API. It manages the delivery workflow from order reception and driver assignment to status updates and completion-history tracking.
@@ -95,6 +97,8 @@ flowchart LR
 - [Error Message Language Selection (Korean)](docs/error-message-language-ko.md)
 - [Operational Dashboard API (Korean)](docs/dashboard-api-ko.md)
 - [Swagger and Docker Setup (Korean)](docs/swagger-and-docker-ko.md)
+- [Railway External Verification Checklist (Korean)](docs/railway-external-verification-ko.md)
+- [Portfolio Summary (Korean)](docs/portfolio-summary-ko.md)
 
 ## Running the Application
 

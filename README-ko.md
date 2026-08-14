@@ -1,5 +1,7 @@
 # DeliveryFlow
 
+[![CI](https://github.com/cybdream/deliveryflow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cybdream/deliveryflow/actions/workflows/ci.yml)
+
 [English](README-en.md)
 
 배송 접수부터 기사 배정, 배송 상태 관리, 완료 이력 조회까지 지원하는 배송 운영 관리 API 프로젝트입니다.
@@ -99,6 +101,8 @@ flowchart LR
 - [Swagger와 Docker 실행](docs/swagger-and-docker-ko.md)
 - [GitHub Actions 자동 테스트](docs/github-actions-ci-ko.md)
 - [Railway 배포 안내](docs/railway-deployment-ko.md)
+- [Railway 외부 검증 체크리스트](docs/railway-external-verification-ko.md)
+- [포트폴리오 소개](docs/portfolio-summary-ko.md)
 
 ## 실행 방법
 
