@@ -46,12 +46,7 @@ Swagger UI에서 실제 Railway 배포 환경을 검증하는 절차입니다.
 2. 기사 토큰으로 Swagger **Authorize**를 수행합니다.
 3. `GET /api/v1/deliveries/me`로 배정된 배송을 확인합니다.
 4. `PATCH /api/v1/deliveries/{deliveryId}/status`를 실행합니다.
-
-```json
-{
-  "status": "IN_DELIVERY"
-}
-```
+5. Swagger의 `status` 선택 목록에서 `IN_DELIVERY`를 고릅니다. `reason`은 비워 둡니다.
 
 ## 5. 관리자 최종 확인
 
@@ -63,3 +58,4 @@ Swagger UI에서 실제 Railway 배포 환경을 검증하는 절차입니다.
 ## 완료 기준
 
 주문 등록 → 기사 배정 → 기사 상태 변경 → 이력 및 대시보드 확인까지 모두 성공하면 핵심 운영 흐름의 외부 검증이 완료됩니다.
+

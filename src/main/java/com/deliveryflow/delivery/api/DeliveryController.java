@@ -41,8 +41,11 @@ public class DeliveryController {
         return deliveryService.findMine(authentication.getName(), status, scheduledDate, pageable);
     }
     @PatchMapping("/{deliveryId}/status")
-    public DeliveryResponse updateStatus(@PathVariable Long deliveryId, @Valid @RequestBody UpdateDeliveryStatusRequest request, Authentication authentication) {
-        return deliveryService.updateStatus(deliveryId, request, authentication.getName(), isAdmin(authentication));
+    public DeliveryResponse updateStatus(@PathVariable Long deliveryId,
+            @RequestParam DeliveryStatus status, @RequestParam(required = false) String reason,
+            Authentication authentication) {
+        return deliveryService.updateStatus(deliveryId, new UpdateDeliveryStatusRequest(status, reason),
+                authentication.getName(), isAdmin(authentication));
     }
     @GetMapping("/{deliveryId}/histories")
     public List<DeliveryHistoryResponse> findHistories(@PathVariable Long deliveryId, Authentication authentication) {

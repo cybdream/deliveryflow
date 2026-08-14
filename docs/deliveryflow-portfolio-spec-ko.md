@@ -170,13 +170,11 @@ POST /api/v1/deliveries
 
 배송 상태 변경:
 
-```json
-PATCH /api/v1/deliveries/501/status
-{
-  "status": "ON_HOLD",
-  "reason": "수령인 부재로 저녁 배송 요청"
-}
+```text
+PATCH /api/v1/deliveries/501/status?status=ON_HOLD&reason=수령인%20부재로%20저녁%20배송%20요청
 ```
+
+Swagger에서는 `status`를 목록에서 선택합니다. `reason`은 `ON_HOLD`, `CANCELLED`일 때만 입력합니다.
 
 ### 4.2 표준 오류 응답
 
@@ -231,3 +229,4 @@ com.deliveryflow
 ## 7. 면접에서 설명할 핵심 내용
 
 > 기존 배송 접수 도메인 경험을 Spring Boot API로 재구성했습니다. 단순 CRUD 기능보다 운영 안정성에 중점을 두어, 잘못된 배송 상태 변경을 막고 배송 기사가 본인 건만 처리하도록 권한을 제한했습니다. 또한 모든 배정과 상태 변경에 변경 이력을 남겼고, 동시 수정 문제를 줄이기 위해 낙관적 락을 적용했습니다.
+

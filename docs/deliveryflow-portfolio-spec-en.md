@@ -170,13 +170,11 @@ POST /api/v1/deliveries
 
 Update delivery status:
 
-```json
-PATCH /api/v1/deliveries/501/status
-{
-  "status": "ON_HOLD",
-  "reason": "Recipient unavailable; requested evening delivery."
-}
+```text
+PATCH /api/v1/deliveries/501/status?status=ON_HOLD&reason=Recipient%20unavailable
 ```
+
+In Swagger, select `status` from the available values. Enter `reason` only for `ON_HOLD` or `CANCELLED`.
 
 ### 4.2 Standard error response
 
@@ -231,3 +229,4 @@ com.deliveryflow
 ## 7. Interview talking points
 
 > I recreated a delivery-reception domain as a Spring Boot API, focusing on operational reliability rather than only CRUD features. The design prevents invalid delivery state transitions, limits drivers to their assigned deliveries, and keeps an immutable audit history for every assignment and status update. I also used optimistic locking to address concurrent operational updates.
+
