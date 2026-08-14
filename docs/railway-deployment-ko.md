@@ -40,6 +40,9 @@ $bytes = New-Object byte[] 32
 
 실제 비밀번호·JWT 비밀값은 GitHub, 소스 코드, README에 저장하지 않습니다.
 
+## 데모 계정 공개 원칙
+
+README에는 관리자와 기사 계정의 이메일·역할만 안내하고 실제 비밀번호는 게시하지 않습니다. 관리자 계정은 주문·기사·배송 데이터를 변경할 수 있으므로, 외부 테스트가 필요한 경우에만 별도로 접근 정보를 제공합니다.
 ## 3. 배포 확인
 
 배포 로그에 `Started DeliveryflowApplication`이 보이면, 서비스 Settings의 **Networking → Generate Domain**으로 공개 주소를 만듭니다.

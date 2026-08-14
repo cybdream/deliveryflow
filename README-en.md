@@ -13,6 +13,14 @@ The project modernizes previous delivery-reception domain experience with Spring
 - Health check: [https://deliveryflow-production.up.railway.app/api/v1/health](https://deliveryflow-production.up.railway.app/api/v1/health)
 
 The production deployment on Railway has been verified externally through administrator login, order creation, and order lookup.
+## Demo Accounts
+
+| Email | Role | Password |
+|---|---|---|
+| `admin@deliveryflow.local` | `ADMIN` | Not published |
+| `driver@deliveryflow.local` | `DRIVER` | Not published |
+
+Passwords are not published in the README because the deployed API permits data changes. Demo access details are provided on request.
 ## Project Goals
 
 - Implement order reception and driver assignment workflows as REST APIs.

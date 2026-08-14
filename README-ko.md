@@ -13,6 +13,14 @@
 - 상태 확인: [https://deliveryflow-production.up.railway.app/api/v1/health](https://deliveryflow-production.up.railway.app/api/v1/health)
 
 Railway 운영 환경에서 관리자 로그인, 주문 등록, 주문 조회까지 외부 접속으로 검증했습니다.
+## 데모 계정
+
+| 이메일 | 역할 | 비밀번호 |
+|---|---|---|
+| `admin@deliveryflow.local` | `ADMIN` | 공개하지 않음 |
+| `driver@deliveryflow.local` | `DRIVER` | 공개하지 않음 |
+
+배포된 API의 데이터 변경을 방지하기 위해 비밀번호는 README에 게시하지 않습니다. 테스트 접근 정보는 요청 시 별도로 제공합니다.
 ## 프로젝트 목표
 
 - 주문 접수와 배송 기사 배정 업무를 API로 구현합니다.
