@@ -6,6 +6,13 @@ DeliveryFlow is an operations-focused delivery management API. It manages the de
 
 The project modernizes previous delivery-reception domain experience with Spring Boot, emphasizing operational reliability, access control, and auditability.
 
+## Live Deployment and API Documentation
+
+- API base URL: [https://deliveryflow-production.up.railway.app](https://deliveryflow-production.up.railway.app)
+- Swagger UI: [https://deliveryflow-production.up.railway.app/swagger-ui/index.html](https://deliveryflow-production.up.railway.app/swagger-ui/index.html)
+- Health check: [https://deliveryflow-production.up.railway.app/api/v1/health](https://deliveryflow-production.up.railway.app/api/v1/health)
+
+The production deployment on Railway has been verified externally through administrator login, order creation, and order lookup.
 ## Project Goals
 
 - Implement order reception and driver assignment workflows as REST APIs.
@@ -45,13 +52,13 @@ flowchart LR
 | Category | Technology |
 |---|---|
 | Language | Java 17 |
-| Framework | Spring Boot 3.x |
+| Framework | Spring Boot 4.1 |
 | Database | PostgreSQL |
 | Data Access | Spring Data JPA |
 | Security | Spring Security, JWT |
 | API Documentation | Swagger / OpenAPI |
 | Test | JUnit 5, Mockito |
-| Deployment | Docker, GitHub Actions |
+| Deployment | Docker, GitHub Actions, Railway |
 
 ## Development Roadmap
 

@@ -6,6 +6,13 @@
 
 과거 배송 접수 시스템 개발 경험을 바탕으로, 운영 환경에서 중요한 상태 전이 검증, 역할별 권한 관리, 변경 이력 보관을 Spring Boot 기반으로 재구성합니다.
 
+## 배포 및 API 문서
+
+- 배포 API: [https://deliveryflow-production.up.railway.app](https://deliveryflow-production.up.railway.app)
+- Swagger UI: [https://deliveryflow-production.up.railway.app/swagger-ui/index.html](https://deliveryflow-production.up.railway.app/swagger-ui/index.html)
+- 상태 확인: [https://deliveryflow-production.up.railway.app/api/v1/health](https://deliveryflow-production.up.railway.app/api/v1/health)
+
+Railway 운영 환경에서 관리자 로그인, 주문 등록, 주문 조회까지 외부 접속으로 검증했습니다.
 ## 프로젝트 목표
 
 - 주문 접수와 배송 기사 배정 업무를 API로 구현합니다.
@@ -45,13 +52,13 @@ flowchart LR
 | 구분 | 기술 |
 |---|---|
 | Language | Java 17 |
-| Framework | Spring Boot 3.x |
+| Framework | Spring Boot 4.1 |
 | Database | PostgreSQL |
 | Data Access | Spring Data JPA |
 | Security | Spring Security, JWT |
 | API Documentation | Swagger / OpenAPI |
 | Test | JUnit 5, Mockito |
-| Deployment | Docker, GitHub Actions |
+| Deployment | Docker, GitHub Actions, Railway |
 
 ## 개발 계획
 
