@@ -19,12 +19,8 @@
 
 ## 상태 변경 예시
 
-```json
-PATCH /api/v1/deliveries/1/status
-{
-  "status": "IN_DELIVERY",
-  "changedBy": "홍길동"
-}
+```text
+PATCH /api/v1/deliveries/1/status?status=IN_DELIVERY
 ```
 
 보류 또는 취소할 때는 `reason`을 반드시 입력합니다.
@@ -37,7 +33,7 @@ PATCH /api/v1/deliveries/1/status
 }
 ```
 
-현재는 로그인 기능 전 단계이므로 `changedBy`에 처리자 이름을 직접 전송합니다. 인증 기능을 구현하면 로그인한 사용자 정보로 바꿉니다.
+처리자 정보는 JWT의 로그인 이메일에서 자동으로 기록됩니다. 기사 계정은 본인에게 배정된 배송의 `IN_DELIVERY`, `DELIVERED`, `ON_HOLD` 상태만 변경할 수 있습니다.
 
 ## 검증된 규칙
 

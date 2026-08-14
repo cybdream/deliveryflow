@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.web.server.ResponseStatusException;
 
 class DeliveryServiceTest {
     private final DeliveryRepository deliveryRepository = Mockito.mock(DeliveryRepository.class);
@@ -61,8 +62,14 @@ class DeliveryServiceTest {
 
     @Test
     void requiresReasonWhenDeliveryIsPutOnHold() {
-        assertThatThrownBy(() -> deliveryService.updateStatus(1L, new UpdateDeliveryStatusRequest(DeliveryStatus.ON_HOLD, null), "driver1@deliveryflow.com", false))
-                .isInstanceOf(IllegalArgumentException.class).hasMessage("ON_HOLD 상태 변경에는 사유가 필요합니다.");
+        User driver = new User("driver1@deliveryflow.com", "홍길동", UserRole.DRIVER, true, LocalDateTime.now());
+        Delivery delivery = new Delivery(new Order("ORD-20260813-1001", "김민지", "010-1234-5678", "서울", LocalDate.now(), LocalDateTime.now()), driver, LocalDate.now(), LocalDateTime.now());
+        when(deliveryRepository.findById(1L)).thenReturn(Optional.of(delivery));
+
+        assertThatThrownBy(() -> deliveryService.updateStatus(1L,
+                new UpdateDeliveryStatusRequest(DeliveryStatus.ON_HOLD, null), "driver1@deliveryflow.com", false))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("ON_HOLD 상태 변경에는 사유가 필요합니다.");
     }
 
     @Test
@@ -73,6 +80,19 @@ class DeliveryServiceTest {
         when(deliveryRepository.findById(1L)).thenReturn(Optional.of(delivery));
         assertThatThrownBy(() -> deliveryService.updateStatus(1L, new UpdateDeliveryStatusRequest(DeliveryStatus.ON_HOLD, "재배송 요청"), "driver1@deliveryflow.com", false))
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("DELIVERED 상태에서 ON_HOLD 상태로 변경할 수 없습니다.");
+    }
+
+    @Test
+    void preventsDriverFromReturningHeldDeliveryToAssigned() {
+        User driver = new User("driver1@deliveryflow.com", "홍길동", UserRole.DRIVER, true, LocalDateTime.now());
+        Delivery delivery = new Delivery(new Order("ORD-20260813-1001", "김민지", "010-1234-5678", "서울", LocalDate.now(), LocalDateTime.now()), driver, LocalDate.now(), LocalDateTime.now());
+        delivery.changeStatus(DeliveryStatus.ON_HOLD, LocalDateTime.now());
+        when(deliveryRepository.findById(1L)).thenReturn(Optional.of(delivery));
+
+        assertThatThrownBy(() -> deliveryService.updateStatus(1L,
+                new UpdateDeliveryStatusRequest(DeliveryStatus.ASSIGNED, null), "driver1@deliveryflow.com", false))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("배송 기사는 배송 시작, 완료, 보류 상태만 변경할 수 있습니다.");
     }
 }
 

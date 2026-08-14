@@ -20,13 +20,17 @@ import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 public class DeliveryService {
+    private static final Set<DeliveryStatus> DRIVER_CHANGEABLE_STATUSES =
+            EnumSet.of(DeliveryStatus.IN_DELIVERY, DeliveryStatus.DELIVERED, DeliveryStatus.ON_HOLD);
     private final DeliveryRepository deliveryRepository;
     private final DeliveryHistoryRepository deliveryHistoryRepository;
     private final OrderRepository orderRepository;
@@ -45,12 +49,17 @@ public class DeliveryService {
 
     @Transactional
     public DeliveryResponse updateStatus(Long deliveryId, UpdateDeliveryStatusRequest request, String actorEmail, boolean admin) {
-        if (requiresReason(request.status()) && (request.reason() == null || request.reason().isBlank())) { throw new IllegalArgumentException(request.status() + " 상태 변경에는 사유가 필요합니다."); }
-        Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() -> new IllegalArgumentException("배송 정보를 찾을 수 없습니다."));
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new IllegalArgumentException("배송 정보를 찾을 수 없습니다."));
         verifyDeliveryAccess(delivery, actorEmail, admin);
+        verifyStatusChangePermission(request.status(), admin);
+        if (requiresReason(request.status()) && (request.reason() == null || request.reason().isBlank())) {
+            throw new IllegalArgumentException(request.status() + " 상태 변경에는 사유가 필요합니다.");
+        }
         LocalDateTime changedAt = LocalDateTime.now();
         DeliveryStatus previousStatus = delivery.changeStatus(request.status(), changedAt);
-        deliveryHistoryRepository.save(new DeliveryHistory(delivery, "STATUS_CHANGED", previousStatus, request.status(), actorEmail, request.reason(), changedAt));
+        deliveryHistoryRepository.save(new DeliveryHistory(delivery, "STATUS_CHANGED", previousStatus,
+                request.status(), actorEmail, request.reason(), changedAt));
         return DeliveryResponse.from(delivery);
     }
 
@@ -77,6 +86,12 @@ public class DeliveryService {
         return deliveryRepository.findAll(specification, pageable).map(DeliveryResponse::from);
     }
 
+    private void verifyStatusChangePermission(DeliveryStatus nextStatus, boolean admin) {
+        if (!admin && !DRIVER_CHANGEABLE_STATUSES.contains(nextStatus)) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,
+                    "배송 기사는 배송 시작, 완료, 보류 상태만 변경할 수 있습니다.");
+        }
+    }
     private boolean requiresReason(DeliveryStatus status) { return status == DeliveryStatus.ON_HOLD || status == DeliveryStatus.CANCELLED; }
 }
 
