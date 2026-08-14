@@ -47,4 +47,7 @@ $bytes = New-Object byte[] 32
 - 상태 확인: `https://발급된-도메인/api/v1/health`
 - Swagger: `https://발급된-도메인/swagger-ui/index.html`
 
+Swagger UI에서 `Failed to fetch`가 보이면, Railway 프록시 주소 처리가 포함된 최신 배포인지 확인하고 새 배포가 완료된 뒤 브라우저를 새로고침합니다.
+
 첫 배포 때 데이터베이스에 관리자·기사 이메일이 없으면 `APP_BOOTSTRAP_*` 값으로 계정이 한 번 생성됩니다.
+
