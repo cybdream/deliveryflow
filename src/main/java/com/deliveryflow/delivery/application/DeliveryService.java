@@ -8,8 +8,8 @@ import com.deliveryflow.delivery.domain.Delivery;
 import com.deliveryflow.delivery.domain.DeliveryHistory;
 import com.deliveryflow.delivery.domain.DeliveryHistoryRepository;
 import com.deliveryflow.delivery.domain.DeliveryRepository;
-import com.deliveryflow.delivery.domain.DeliveryStatus;
 import com.deliveryflow.delivery.domain.DeliverySpecifications;
+import com.deliveryflow.delivery.domain.DeliveryStatus;
 import com.deliveryflow.order.domain.Order;
 import com.deliveryflow.order.domain.OrderRepository;
 import com.deliveryflow.user.domain.User;
@@ -17,12 +17,13 @@ import com.deliveryflow.user.domain.UserRepository;
 import com.deliveryflow.user.domain.UserRole;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +36,29 @@ public class DeliveryService {
     private final DeliveryHistoryRepository deliveryHistoryRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
-    public DeliveryService(DeliveryRepository deliveryRepository, DeliveryHistoryRepository deliveryHistoryRepository, OrderRepository orderRepository, UserRepository userRepository) { this.deliveryRepository = deliveryRepository; this.deliveryHistoryRepository = deliveryHistoryRepository; this.orderRepository = orderRepository; this.userRepository = userRepository; }
+
+    public DeliveryService(DeliveryRepository deliveryRepository, DeliveryHistoryRepository deliveryHistoryRepository,
+            OrderRepository orderRepository, UserRepository userRepository) {
+        this.deliveryRepository = deliveryRepository;
+        this.deliveryHistoryRepository = deliveryHistoryRepository;
+        this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
+    }
 
     @Transactional
     public DeliveryResponse assign(CreateDeliveryRequest request) {
-        if (deliveryRepository.existsByOrderId(request.orderId())) { throw new IllegalArgumentException("이미 배송이 배정된 주문입니다."); }
-        Order order = orderRepository.findById(request.orderId()).orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
-        User driver = userRepository.findById(request.driverId()).filter(user -> user.getRole() == UserRole.DRIVER && user.isActive()).orElseThrow(() -> new IllegalArgumentException("활성 상태의 배송 기사를 찾을 수 없습니다."));
-        Delivery savedDelivery = deliveryRepository.save(new Delivery(order, driver, request.scheduledDate(), LocalDateTime.now()));
-        deliveryHistoryRepository.save(new DeliveryHistory(savedDelivery, "ASSIGNED", null, DeliveryStatus.ASSIGNED, "SYSTEM", null, savedDelivery.getAssignedAt()));
+        if (deliveryRepository.existsByOrderId(request.orderId())) {
+            throw new IllegalArgumentException("이미 배송이 배정된 주문입니다.");
+        }
+        Order order = orderRepository.findById(request.orderId())
+                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
+        User driver = userRepository.findById(request.driverId())
+                .filter(user -> user.getRole() == UserRole.DRIVER && user.isActive())
+                .orElseThrow(() -> new IllegalArgumentException("활성 상태의 배송 기사를 찾을 수 없습니다."));
+        Delivery savedDelivery = deliveryRepository.save(new Delivery(order, driver, request.scheduledDate(),
+                createTrackingNo(), LocalDateTime.now()));
+        deliveryHistoryRepository.save(new DeliveryHistory(savedDelivery, "ASSIGNED", null, DeliveryStatus.ASSIGNED,
+                "SYSTEM", null, savedDelivery.getAssignedAt()));
         return DeliveryResponse.from(savedDelivery);
     }
 
@@ -64,12 +79,13 @@ public class DeliveryService {
     }
 
     public List<DeliveryHistoryResponse> findHistories(Long deliveryId, String actorEmail, boolean admin) {
-        if (!deliveryRepository.existsById(deliveryId)) { throw new IllegalArgumentException("배송 정보를 찾을 수 없습니다."); }
-        return deliveryHistoryRepository.findByDeliveryIdOrderByChangedAtAsc(deliveryId).stream().map(DeliveryHistoryResponse::from).toList();
+        if (!deliveryRepository.existsById(deliveryId)) {
+            throw new IllegalArgumentException("배송 정보를 찾을 수 없습니다.");
+        }
+        return deliveryHistoryRepository.findByDeliveryIdOrderByChangedAtAsc(deliveryId).stream()
+                .map(DeliveryHistoryResponse::from).toList();
     }
-    private void verifyDeliveryAccess(Delivery delivery, String actorEmail, boolean admin) {
-        if (!admin && !delivery.getDriver().getEmail().equals(actorEmail)) { throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "본인에게 배정된 배송만 조회하거나 변경할 수 있습니다."); }
-    }
+
     public Page<DeliveryResponse> findAll(DeliveryStatus status, Long driverId, LocalDate scheduledDate, Pageable pageable) {
         Specification<Delivery> specification = Specification.allOf(
                 DeliverySpecifications.hasStatus(status),
@@ -86,12 +102,32 @@ public class DeliveryService {
         return deliveryRepository.findAll(specification, pageable).map(DeliveryResponse::from);
     }
 
+    private String createTrackingNo() {
+        String prefix = "TRK-" + LocalDate.now().toString().replace("-", "") + "-";
+        for (int attempt = 0; attempt < 10; attempt++) {
+            String trackingNo = prefix + ThreadLocalRandom.current().nextInt(10_000_000, 100_000_000);
+            if (!deliveryRepository.existsByTrackingNo(trackingNo)) {
+                return trackingNo;
+            }
+        }
+        throw new IllegalStateException("운송장 번호를 생성하지 못했습니다.");
+    }
+
+    private void verifyDeliveryAccess(Delivery delivery, String actorEmail, boolean admin) {
+        if (!admin && !delivery.getDriver().getEmail().equals(actorEmail)) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,
+                    "본인에게 배정된 배송만 조회하거나 변경할 수 있습니다.");
+        }
+    }
+
     private void verifyStatusChangePermission(DeliveryStatus nextStatus, boolean admin) {
         if (!admin && !DRIVER_CHANGEABLE_STATUSES.contains(nextStatus)) {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,
                     "배송 기사는 배송 시작, 완료, 보류 상태만 변경할 수 있습니다.");
         }
     }
-    private boolean requiresReason(DeliveryStatus status) { return status == DeliveryStatus.ON_HOLD || status == DeliveryStatus.CANCELLED; }
-}
 
+    private boolean requiresReason(DeliveryStatus status) {
+        return status == DeliveryStatus.ON_HOLD || status == DeliveryStatus.CANCELLED;
+    }
+}

@@ -120,7 +120,7 @@ try {
 
     $health = Invoke-DeliveryFlowApi -Method GET -Path '/api/v1/health'
     Assert-Equal -Actual $health.status -Expected 'UP' -Description 'Health check failed'
-    Write-Host '[1/8] Health check succeeded.' -ForegroundColor Green
+    Write-Host '[1/9] Health check succeeded.' -ForegroundColor Green
 
     $adminSecurePassword = Read-Host "Password for $AdminEmail" -AsSecureString
     $driverSecurePassword = Read-Host "Password for $DriverEmail" -AsSecureString
@@ -136,7 +136,7 @@ try {
     $driverToken = $driverLogin.accessToken
     $adminHeaders = @{ Authorization = "Bearer $adminToken"; 'Accept-Language' = 'ko' }
     $driverHeaders = @{ Authorization = "Bearer $driverToken"; 'Accept-Language' = 'ko' }
-    Write-Host '[2/8] Administrator and driver login succeeded.' -ForegroundColor Green
+    Write-Host '[2/9] Administrator and driver login succeeded.' -ForegroundColor Green
 
     $confirmation = Read-Host 'This test will create an order and delivery. Type RUN to continue'
     if ($confirmation -cne 'RUN') {
@@ -151,7 +151,7 @@ try {
         address = '서울특별시 중구 테스트로 1'
         requestedDate = $ScheduledDate
     }
-    Write-Host "[3/8] Order created: $($order.orderNo) (ID $($order.id))" -ForegroundColor Green
+    Write-Host "[3/9] Order created: $($order.orderNo) (ID $($order.id))" -ForegroundColor Green
 
     $drivers = @(Invoke-DeliveryFlowApi -Method GET -Path '/api/v1/drivers' -Headers $adminHeaders)
     $driver = $drivers | Where-Object { $_.email -eq $DriverEmail } | Select-Object -First 1
@@ -165,22 +165,35 @@ try {
         scheduledDate = $ScheduledDate
     }
     Assert-Equal -Actual $delivery.status -Expected 'ASSIGNED' -Description 'Delivery assignment failed'
-    Write-Host "[4/8] Delivery assigned: ID $($delivery.id)" -ForegroundColor Green
+    Write-Host "[4/9] Delivery assigned: ID $($delivery.id)" -ForegroundColor Green
 
     $myDeliveries = Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/deliveries/me?scheduledDate=$ScheduledDate" -Headers $driverHeaders
     $assignedDelivery = @($myDeliveries.content | Where-Object { $_.id -eq $delivery.id }) | Select-Object -First 1
     if ($null -eq $assignedDelivery) {
         throw "Assigned delivery $($delivery.id) is not visible to the driver."
     }
-    Write-Host '[5/8] Driver delivery list check succeeded.' -ForegroundColor Green
+    Write-Host '[5/9] Driver delivery list check succeeded.' -ForegroundColor Green
 
     $inDelivery = Invoke-DeliveryFlowApi -Method PATCH -Path "/api/v1/deliveries/$($delivery.id)/status?status=IN_DELIVERY" -Headers $driverHeaders
     Assert-Equal -Actual $inDelivery.status -Expected 'IN_DELIVERY' -Description 'Failed to start delivery'
-    Write-Host '[6/8] Delivery status changed to IN_DELIVERY.' -ForegroundColor Green
+    Write-Host '[6/9] Delivery status changed to IN_DELIVERY.' -ForegroundColor Green
 
     $delivered = Invoke-DeliveryFlowApi -Method PATCH -Path "/api/v1/deliveries/$($delivery.id)/status?status=DELIVERED" -Headers $driverHeaders
     Assert-Equal -Actual $delivered.status -Expected 'DELIVERED' -Description 'Failed to complete delivery'
-    Write-Host '[7/8] Delivery status changed to DELIVERED.' -ForegroundColor Green
+    Write-Host '[7/9] Delivery status changed to DELIVERED.' -ForegroundColor Green
+
+    $trackingByOrder = Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/tracking/orders/$($order.orderNo)?recipientPhone=010-9999-9999"
+    Assert-Equal -Actual $trackingByOrder.orderNo -Expected $order.orderNo -Description 'Customer order-number tracking check failed'
+    Assert-Equal -Actual $trackingByOrder.status -Expected 'DELIVERED' -Description 'Customer order-number tracking status check failed'
+    if ([string]::IsNullOrWhiteSpace($trackingByOrder.trackingNo)) {
+        throw 'A tracking number was not issued when the delivery was assigned.'
+    }
+
+    $trackingByShipment = Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/tracking/shipments/$($trackingByOrder.trackingNo)?recipientPhone=010-9999-9999"
+    Assert-Equal -Actual $trackingByShipment.orderNo -Expected $order.orderNo -Description 'Customer shipment-number tracking order check failed'
+    Assert-Equal -Actual $trackingByShipment.trackingNo -Expected $trackingByOrder.trackingNo -Description 'Customer shipment-number tracking number check failed'
+    Assert-Equal -Actual $trackingByShipment.status -Expected 'DELIVERED' -Description 'Customer shipment-number tracking status check failed'
+    Write-Host '[8/9] Public customer tracking by order and shipment number succeeded.' -ForegroundColor Green
 
     $histories = @(Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/deliveries/$($delivery.id)/histories" -Headers $adminHeaders | ForEach-Object { $_ })
     $dashboard = Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/dashboard/delivery-status?scheduledDate=$ScheduledDate" -Headers $adminHeaders
@@ -191,7 +204,7 @@ try {
         throw "Expected delivery history statuses were not found: $($missingStatuses -join ', ')."
     }
 
-    Write-Host '[8/8] Delivery history and dashboard check succeeded.' -ForegroundColor Green
+    Write-Host '[9/9] Delivery history and dashboard check succeeded.' -ForegroundColor Green
     Write-Host ''
     [PSCustomObject]@{
         OrderId = $order.id

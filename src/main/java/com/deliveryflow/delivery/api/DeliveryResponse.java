@@ -8,6 +8,7 @@ public record DeliveryResponse(
         Long id,
         Long orderId,
         String orderNo,
+        String trackingNo,
         Long driverId,
         String driverName,
         LocalDate scheduledDate,
@@ -16,7 +17,7 @@ public record DeliveryResponse(
 ) {
     public static DeliveryResponse from(Delivery delivery) {
         return new DeliveryResponse(delivery.getId(), delivery.getOrder().getId(), delivery.getOrder().getOrderNo(),
-                delivery.getDriver().getId(), delivery.getDriver().getName(), delivery.getScheduledDate(),
-                delivery.getStatus().name(), delivery.getAssignedAt());
+                delivery.getTrackingNo(), delivery.getDriver().getId(), delivery.getDriver().getName(),
+                delivery.getScheduledDate(), delivery.getStatus().name(), delivery.getAssignedAt());
     }
 }

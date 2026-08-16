@@ -28,10 +28,24 @@ public class Delivery {
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 20) private DeliveryStatus status;
     @Column(name = "assigned_at", nullable = false, updatable = false) private LocalDateTime assignedAt;
     @Column(name = "delivered_at") private LocalDateTime deliveredAt;
+    @Column(name = "tracking_no", unique = true, length = 30) private String trackingNo;
     @Version private Long version;
 
     protected Delivery() { }
-    public Delivery(Order order, User driver, LocalDate scheduledDate, LocalDateTime assignedAt) { this.order = order; this.driver = driver; this.scheduledDate = scheduledDate; this.status = DeliveryStatus.ASSIGNED; this.assignedAt = assignedAt; }
+
+    public Delivery(Order order, User driver, LocalDate scheduledDate, LocalDateTime assignedAt) {
+        this(order, driver, scheduledDate, null, assignedAt);
+    }
+
+    public Delivery(Order order, User driver, LocalDate scheduledDate, String trackingNo, LocalDateTime assignedAt) {
+        this.order = order;
+        this.driver = driver;
+        this.scheduledDate = scheduledDate;
+        this.trackingNo = trackingNo;
+        this.status = DeliveryStatus.ASSIGNED;
+        this.assignedAt = assignedAt;
+    }
+
     public Long getId() { return id; }
     public Order getOrder() { return order; }
     public User getDriver() { return driver; }
@@ -39,14 +53,18 @@ public class Delivery {
     public DeliveryStatus getStatus() { return status; }
     public LocalDateTime getAssignedAt() { return assignedAt; }
     public LocalDateTime getDeliveredAt() { return deliveredAt; }
+    public String getTrackingNo() { return trackingNo; }
 
     public DeliveryStatus changeStatus(DeliveryStatus nextStatus, LocalDateTime changedAt) {
         DeliveryStatus previousStatus = status;
-        if (!isAllowedTransition(previousStatus, nextStatus)) { throw new IllegalArgumentException(previousStatus + " 상태에서 " + nextStatus + " 상태로 변경할 수 없습니다."); }
+        if (!isAllowedTransition(previousStatus, nextStatus)) {
+            throw new IllegalArgumentException(previousStatus + " 상태에서 " + nextStatus + " 상태로 변경할 수 없습니다.");
+        }
         status = nextStatus;
         if (nextStatus == DeliveryStatus.DELIVERED) { deliveredAt = changedAt; }
         return previousStatus;
     }
+
     private boolean isAllowedTransition(DeliveryStatus from, DeliveryStatus to) {
         return switch (from) {
             case ASSIGNED -> to == DeliveryStatus.IN_DELIVERY || to == DeliveryStatus.ON_HOLD || to == DeliveryStatus.CANCELLED;
