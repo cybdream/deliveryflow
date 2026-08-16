@@ -91,6 +91,9 @@ flowchart LR
 
 - [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
 - [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
+- [현재 상태와 다음 작업](docs/00-current-status-ko.md)
+- [개발 여정 - Markdown](docs/deliveryflow-development-journey-ko.md)
+- [개발 여정 - PDF](docs/deliveryflow-development-journey-ko-v2.pdf)
 - [구현 현황](docs/implementation-status-ko.md)
 - [로그인 API](docs/login-api-ko.md)
 - [JWT 인증과 역할 권한](docs/jwt-authorization-ko.md)
@@ -137,4 +140,3 @@ src/main/java/com/deliveryflow
 - 알림 기능
 - 고객용 배송 조회 화면
 - 배포 환경 모니터링 및 로그 관리
-
