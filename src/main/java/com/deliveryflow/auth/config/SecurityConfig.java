@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(errors -> errors.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/login", "/api/v1/health", "/api/v1/tracking/**", "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/", "/index.html", "/api/v1/auth/login", "/api/v1/health", "/api/v1/tracking/**", "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/orders").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/orders/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/drivers/**").hasRole("ADMIN")

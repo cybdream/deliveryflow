@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DeliveryFlow 고객 배송 조회">
+  <title>DeliveryFlow | 배송 조회</title>
+  <style>
+    :root { color-scheme: light; --navy: #12263f; --blue: #2563eb; --blue-soft: #eff6ff; --ink: #172033; --muted: #5e6b82; --line: #d8e0ec; --surface: #fff; --bg: #f4f7fb; --error: #b42318; --success: #087443; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; color: var(--ink); background: var(--bg); font-family: "Malgun Gothic", "Segoe UI", Arial, sans-serif; }
+    header { color: white; background: var(--navy); }
+    .header-inner, main { width: min(100% - 32px, 760px); margin: 0 auto; }
+    .header-inner { padding: 24px 0; }
+    .brand { margin: 0; font-size: 1.25rem; font-weight: 800; letter-spacing: -.02em; }
+    .brand span { color: #93c5fd; }
+    main { padding: 48px 0 64px; }
+    .eyebrow { margin: 0 0 10px; color: var(--blue); font-size: .85rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(1.85rem, 6vw, 2.7rem); letter-spacing: -.045em; }
+    .intro { margin: 16px 0 30px; color: var(--muted); font-size: 1rem; line-height: 1.65; }
+    .panel { padding: clamp(22px, 5vw, 36px); background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 12px 30px rgba(18, 38, 63, .07); }
+    fieldset { margin: 0 0 24px; padding: 0; border: 0; }
+    legend, label { display: block; font-weight: 700; }
+    legend { margin-bottom: 12px; }
+    .choice-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .choice { display: flex; align-items: center; gap: 9px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+    .choice:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); }
+    input[type="radio"] { accent-color: var(--blue); }
+    .field { margin-top: 20px; }
+    label { margin-bottom: 8px; font-size: .94rem; }
+    input[type="text"] { width: 100%; padding: 13px 14px; color: var(--ink); border: 1px solid #b9c5d6; border-radius: 10px; font: inherit; }
+    input[type="text"]:focus { outline: 3px solid #bfdbfe; border-color: var(--blue); }
+    .hint { margin: 7px 0 0; color: var(--muted); font-size: .84rem; }
+    button { width: 100%; margin-top: 26px; padding: 14px 16px; color: white; border: 0; border-radius: 10px; background: var(--blue); font: inherit; font-weight: 800; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    button:disabled { cursor: wait; opacity: .65; }
+    [hidden] { display: none !important; }
+    .notice, .result { margin-top: 24px; padding: 16px; border-radius: 10px; line-height: 1.55; }
+    .notice.error { color: var(--error); background: #fef3f2; border: 1px solid #fecdca; }
+    .result { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .result h2 { margin: 0 0 14px; color: var(--success); font-size: 1.1rem; }
+    dl { display: grid; grid-template-columns: 110px 1fr; gap: 10px 16px; margin: 0; }
+    dt { color: var(--muted); } dd { margin: 0; font-weight: 700; word-break: break-word; }
+    .footer-note { margin: 24px 0 0; color: var(--muted); font-size: .85rem; line-height: 1.6; }
+    @media (max-width: 480px) { .choice-row { grid-template-columns: 1fr; } dl { grid-template-columns: 92px 1fr; gap: 9px; } }
+  </style>
+</head>
+<body>
+<header><div class="header-inner"><p class="brand">Delivery<span>Flow</span></p></div></header>
+<main>
+  <p class="eyebrow">Customer tracking</p>
+  <h1>배송 상태를 조회하세요</h1>
+  <p class="intro">주문번호 또는 배송 추적번호와 수령인 전화번호를 입력하면 현재 배송 상태를 확인할 수 있습니다.</p>
+  <section class="panel" aria-labelledby="lookup-title">
+    <h2 id="lookup-title" hidden>배송 조회 입력</h2>
+    <form id="tracking-form" novalidate>
+      <fieldset>
+        <legend>조회 방법</legend>
+        <div class="choice-row">
+          <label class="choice"><input type="radio" name="lookup-type" value="orders" checked> 주문번호로 조회</label>
+          <label class="choice"><input type="radio" name="lookup-type" value="shipments"> 배송 추적번호로 조회</label>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label id="lookup-label" for="lookup-value">주문번호</label>
+        <input id="lookup-value" name="lookup-value" type="text" autocomplete="off" required maxlength="30" placeholder="예: ORD-20260816-8503">
+        <p id="lookup-hint" class="hint">주문번호를 입력해 주세요.</p>
+      </div>
+      <div class="field">
+        <label for="recipient-phone">수령인 전화번호</label>
+        <input id="recipient-phone" name="recipient-phone" type="text" inputmode="tel" autocomplete="tel" required maxlength="20" placeholder="예: 010-1234-5678">
+        <p class="hint">주문에 입력한 전화번호와 정확히 일치해야 합니다.</p>
+      </div>
+      <button id="submit-button" type="submit">배송 조회하기</button>
+    </form>
+    <div id="error-notice" class="notice error" role="alert" hidden></div>
+    <section id="result" class="result" aria-live="polite" hidden>
+      <h2>배송 조회 결과</h2>
+      <dl>
+        <dt>주문번호</dt><dd id="result-order"></dd>
+        <dt>배송 추적번호</dt><dd id="result-tracking"></dd>
+        <dt>현재 상태</dt><dd id="result-status"></dd>
+        <dt>배송 예정일</dt><dd id="result-scheduled"></dd>
+        <dt>배송 완료일</dt><dd id="result-delivered"></dd>
+      </dl>
+    </section>
+  </section>
+  <p class="footer-note">배송 정보 보호를 위해 조회번호와 수령인 전화번호가 모두 일치해야 합니다.</p>
+</main>
+<script>
+  const form = document.querySelector('#tracking-form');
+  const lookupValue = document.querySelector('#lookup-value');
+  const lookupLabel = document.querySelector('#lookup-label');
+  const lookupHint = document.querySelector('#lookup-hint');
+  const button = document.querySelector('#submit-button');
+  const errorNotice = document.querySelector('#error-notice');
+  const result = document.querySelector('#result');
+  const statusNames = { ASSIGNED: '배송 준비', IN_DELIVERY: '배송 중', ON_HOLD: '보류', DELIVERED: '배송 완료', CANCELLED: '취소' };
+
+  function selectedType() { return document.querySelector('input[name="lookup-type"]:checked').value; }
+  function updateLookupField() {
+    const shipment = selectedType() === 'shipments';
+    lookupLabel.textContent = shipment ? '배송 추적번호' : '주문번호';
+    lookupValue.placeholder = shipment ? '예: TRK-20260816-12345678' : '예: ORD-20260816-8503';
+    lookupHint.textContent = shipment ? '배송 배정 후 발급된 번호를 입력해 주세요.' : '주문번호를 입력해 주세요.';
+    lookupValue.value = '';
+    errorNotice.hidden = true;
+    result.hidden = true;
+  }
+  document.querySelectorAll('input[name="lookup-type"]').forEach((input) => input.addEventListener('change', updateLookupField));
+
+  function showError(message) { errorNotice.textContent = message; errorNotice.hidden = false; result.hidden = true; }
+  function valueOrDash(value) { return value ? value : '-'; }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const value = lookupValue.value.trim();
+    const phone = document.querySelector('#recipient-phone').value.trim();
+    if (!value || !phone) { showError('조회번호와 수령인 전화번호를 모두 입력해 주세요.'); return; }
+    button.disabled = true;
+    button.textContent = '조회 중…';
+    errorNotice.hidden = true;
+    result.hidden = true;
+    try {
+      const response = await fetch(`/api/v1/tracking/${selectedType()}/${encodeURIComponent(value)}?recipientPhone=${encodeURIComponent(phone)}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) { throw new Error(data.message || '배송 정보를 찾을 수 없습니다. 입력값을 다시 확인해 주세요.'); }
+      document.querySelector('#result-order').textContent = valueOrDash(data.orderNo);
+      document.querySelector('#result-tracking').textContent = valueOrDash(data.trackingNo);
+      document.querySelector('#result-status').textContent = statusNames[data.status] || data.status;
+      document.querySelector('#result-scheduled').textContent = valueOrDash(data.scheduledDate);
+      document.querySelector('#result-delivered').textContent = valueOrDash(data.deliveredAt);
+      result.hidden = false;
+    } catch (error) {
+      showError(error.message || '조회 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      button.disabled = false;
+      button.textContent = '배송 조회하기';
+    }
+  });
+</script>
+</body>
+</html>

@@ -16,7 +16,7 @@
 | 전체 배송 목록·검색 | `GET` | `/api/v1/deliveries` |
 | 내 배송 목록·검색 | `GET` | `/api/v1/deliveries/me` |
 | 배송 현황 대시보드 | `GET` | `/api/v1/dashboard/delivery-status` |
-| 고객 배송 조회 | GET | /api/v1/tracking/orders/{orderNo}, /api/v1/tracking/shipments/{trackingNo} |
+| 고객 배송 조회 API·웹 화면 | GET | /, /api/v1/tracking/orders/{orderNo}, /api/v1/tracking/shipments/{trackingNo} |
 
 ## 상태 변경 예시
 
