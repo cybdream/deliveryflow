@@ -18,25 +18,60 @@ import jakarta.persistence.Version;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * Represents one driver's delivery assignment for one order.
+ */
 @Entity
 @Table(name = "deliveries", uniqueConstraints = @UniqueConstraint(name = "uk_delivery_order", columnNames = "order_id"))
 public class Delivery {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "order_id", nullable = false) private Order order;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "driver_id", nullable = false) private User driver;
-    @Column(name = "scheduled_date", nullable = false) private LocalDate scheduledDate;
-    @Enumerated(EnumType.STRING) @Column(nullable = false, length = 20) private DeliveryStatus status;
-    @Column(name = "assigned_at", nullable = false, updatable = false) private LocalDateTime assignedAt;
-    @Column(name = "delivered_at") private LocalDateTime deliveredAt;
-    @Column(name = "tracking_no", unique = true, length = 30) private String trackingNo;
-    @Version private Long version;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    protected Delivery() { }
+    // Order and driver relationships are loaded only when the business flow needs them.
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "driver_id", nullable = false)
+    private User driver;
+
+    // Operational state and dates used by the delivery workflow.
+    @Column(name = "scheduled_date", nullable = false)
+    private LocalDate scheduledDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private DeliveryStatus status;
+
+    @Column(name = "assigned_at", nullable = false, updatable = false)
+    private LocalDateTime assignedAt;
+
+    @Column(name = "delivered_at")
+    private LocalDateTime deliveredAt;
+
+    // This is an internal tracking number, not a carrier-issued waybill number.
+    @Column(name = "tracking_no", unique = true, length = 30)
+    private String trackingNo;
+
+    @Version
+    private Long version;
+
+    protected Delivery() {
+        // Required by JPA.
+    }
+
+    /**
+     * Creates a delivery without a tracking number for legacy data and unit tests.
+     */
     public Delivery(Order order, User driver, LocalDate scheduledDate, LocalDateTime assignedAt) {
         this(order, driver, scheduledDate, null, assignedAt);
     }
 
+    /**
+     * Creates a newly assigned delivery in the ASSIGNED state.
+     */
     public Delivery(Order order, User driver, LocalDate scheduledDate, String trackingNo, LocalDateTime assignedAt) {
         this.order = order;
         this.driver = driver;
@@ -55,21 +90,35 @@ public class Delivery {
     public LocalDateTime getDeliveredAt() { return deliveredAt; }
     public String getTrackingNo() { return trackingNo; }
 
+    /**
+     * Changes the delivery status when the requested transition is allowed.
+     */
     public DeliveryStatus changeStatus(DeliveryStatus nextStatus, LocalDateTime changedAt) {
         DeliveryStatus previousStatus = status;
         if (!isAllowedTransition(previousStatus, nextStatus)) {
-            throw new IllegalArgumentException(previousStatus + " 상태에서 " + nextStatus + " 상태로 변경할 수 없습니다.");
+            throw new DeliveryStatusTransitionException(previousStatus, nextStatus);
         }
+
         status = nextStatus;
-        if (nextStatus == DeliveryStatus.DELIVERED) { deliveredAt = changedAt; }
+        if (nextStatus == DeliveryStatus.DELIVERED) {
+            deliveredAt = changedAt;
+        }
+
         return previousStatus;
     }
 
+    /**
+     * Defines every permitted state transition in one place.
+     */
     private boolean isAllowedTransition(DeliveryStatus from, DeliveryStatus to) {
         return switch (from) {
-            case ASSIGNED -> to == DeliveryStatus.IN_DELIVERY || to == DeliveryStatus.ON_HOLD || to == DeliveryStatus.CANCELLED;
+            case ASSIGNED -> to == DeliveryStatus.IN_DELIVERY
+                    || to == DeliveryStatus.ON_HOLD
+                    || to == DeliveryStatus.CANCELLED;
             case IN_DELIVERY -> to == DeliveryStatus.DELIVERED || to == DeliveryStatus.ON_HOLD;
-            case ON_HOLD -> to == DeliveryStatus.ASSIGNED || to == DeliveryStatus.IN_DELIVERY || to == DeliveryStatus.CANCELLED;
+            case ON_HOLD -> to == DeliveryStatus.ASSIGNED
+                    || to == DeliveryStatus.IN_DELIVERY
+                    || to == DeliveryStatus.CANCELLED;
             case DELIVERED, CANCELLED -> false;
         };
     }

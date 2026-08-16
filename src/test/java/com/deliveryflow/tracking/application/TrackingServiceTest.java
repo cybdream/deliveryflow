@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
+import com.deliveryflow.common.api.ApiException;
 import com.deliveryflow.delivery.domain.Delivery;
 import com.deliveryflow.delivery.domain.DeliveryRepository;
 import com.deliveryflow.delivery.domain.DeliveryStatus;
@@ -15,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.web.server.ResponseStatusException;
 
 class TrackingServiceTest {
     private final DeliveryRepository deliveryRepository = Mockito.mock(DeliveryRepository.class);
@@ -53,8 +53,8 @@ class TrackingServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> trackingService.trackByOrderNo("ORD-20260816-8503", "010-9999-9999"))
-                .isInstanceOf(ResponseStatusException.class)
-                .hasMessageContaining("배송 정보를 찾을 수 없습니다.");
+                .isInstanceOf(ApiException.class)
+                .hasMessage("error.delivery.notFound");
     }
 
     private Delivery delivery() {

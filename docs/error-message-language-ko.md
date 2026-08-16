@@ -23,3 +23,18 @@ Invoke-RestMethod "http://localhost:8080/api/v1/orders" -Headers $englishDriverH
 ```
 
 `code` 값은 언어와 무관하게 고정됩니다. 화면이나 다른 시스템은 `code`로 처리하고, 사용자에게 보여줄 문구에는 `message`를 사용합니다.
+
+## 메시지 키 기반 관리
+
+서비스와 도메인 코드는 사용자에게 보여 줄 한글·영문 문구를 직접 작성하지 않습니다. 대신 `ApiException`에 `error.delivery.notFound`와 같은 메시지 키를 전달하고, 전역 예외 처리기가 현재 요청의 `Accept-Language`에 맞는 문구를 선택합니다.
+
+```java
+throw ApiException.notFound("error.delivery.notFound");
+```
+
+언어별 문구는 아래 파일에서 관리합니다.
+
+- 기본 한국어: `src/main/resources/messages.properties`
+- 영어: `src/main/resources/messages_en.properties`
+
+상태 전이처럼 값이 필요한 메시지는 `{0}`, `{1}` 자리표시자를 사용합니다. 따라서 API의 `code`는 고정하고, `message`만 요청 언어에 맞춰 표시할 수 있습니다.

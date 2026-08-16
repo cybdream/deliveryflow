@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public record CreateOrderRequest(
         @NotBlank @Size(max = 50) String recipientName,
-        @NotBlank @Pattern(regexp = "^[0-9-]{10,20}$", message = "전화번호 형식이 올바르지 않습니다.") String recipientPhone,
+        @NotBlank @Pattern(regexp = "^[0-9-]{10,20}$", message = "{validation.order.recipientPhone}") String recipientPhone,
         @NotBlank @Size(max = 300) String address,
         @NotNull @FutureOrPresent LocalDate requestedDate
 ) {

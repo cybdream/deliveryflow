@@ -7,12 +7,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Provides administrator-only delivery status summaries for the dashboard.
+ */
 @RestController
 @RequestMapping("/api/v1/dashboard")
 public class DashboardController {
     private final DashboardService dashboardService;
-    public DashboardController(DashboardService dashboardService) { this.dashboardService = dashboardService; }
 
+    public DashboardController(DashboardService dashboardService) {
+        this.dashboardService = dashboardService;
+    }
+
+    /**
+     * Returns all deliveries or deliveries for one scheduled date when it is supplied.
+     */
     @GetMapping("/delivery-status")
     public DeliveryStatusSummaryResponse deliveryStatus(@RequestParam(required = false) LocalDate scheduledDate) {
         return dashboardService.summarize(scheduledDate);

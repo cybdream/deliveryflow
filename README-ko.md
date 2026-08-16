@@ -106,7 +106,7 @@ flowchart LR
 - [고객용 배송 조회 API](docs/customer-tracking-api-ko.md)
 - [고객 배송 조회 화면](docs/customer-tracking-page-ko.md)
 - [표준 오류 응답](docs/error-response-ko.md)
-- [오류 메시지 언어 선택](docs/error-message-language-ko.md)
+- [오류 메시지 언어 선택 및 메시지 키 관리](docs/error-message-language-ko.md)
 - [운영 대시보드 API](docs/dashboard-api-ko.md)
 - [관리자 배송 현황 화면](docs/admin-dashboard-page-ko.md)
 - [Swagger와 Docker 실행](docs/swagger-and-docker-ko.md)

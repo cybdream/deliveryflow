@@ -1,5 +1,6 @@
 package com.deliveryflow.user.application;
 
+import com.deliveryflow.common.api.ApiException;
 import com.deliveryflow.user.api.CreateDriverRequest;
 import com.deliveryflow.user.api.DriverResponse;
 import com.deliveryflow.user.domain.User;
@@ -23,7 +24,7 @@ public class DriverService {
     @Transactional
     public DriverResponse create(CreateDriverRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+            throw ApiException.businessRule("error.user.emailDuplicate");
         }
 
         User driver = new User(request.email(), request.name(), UserRole.DRIVER, true, LocalDateTime.now());

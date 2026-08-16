@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.deliveryflow.common.api.ApiException;
 import com.deliveryflow.user.api.CreateDriverRequest;
 import com.deliveryflow.user.api.DriverResponse;
 import com.deliveryflow.user.domain.User;
@@ -34,7 +35,7 @@ class DriverServiceTest {
         when(userRepository.existsByEmail("driver1@deliveryflow.com")).thenReturn(true);
 
         assertThatThrownBy(() -> driverService.create(new CreateDriverRequest("홍길동", "driver1@deliveryflow.com")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 등록된 이메일입니다.");
+                .isInstanceOf(ApiException.class)
+                .hasMessage("error.user.emailDuplicate");
     }
 }

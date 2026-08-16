@@ -1,5 +1,6 @@
 package com.deliveryflow.order.application;
 
+import com.deliveryflow.common.api.ApiException;
 import com.deliveryflow.order.api.CreateOrderRequest;
 import com.deliveryflow.order.api.OrderResponse;
 import com.deliveryflow.order.domain.Order;
@@ -48,6 +49,6 @@ public class OrderService {
                 return orderNo;
             }
         }
-        throw new IllegalStateException("주문번호를 생성하지 못했습니다. 다시 시도해 주세요.");
+        throw ApiException.internal("error.order.numberGenerationFailed");
     }
 }

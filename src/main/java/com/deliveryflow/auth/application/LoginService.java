@@ -1,14 +1,13 @@
 package com.deliveryflow.auth.application;
 
 import com.deliveryflow.auth.api.LoginRequest;
+import com.deliveryflow.common.api.ApiException;
 import com.deliveryflow.auth.api.LoginResponse;
 import com.deliveryflow.user.domain.User;
 import com.deliveryflow.user.domain.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,7 +26,7 @@ public class LoginService {
         User user = userRepository.findByEmail(request.email())
                 .filter(User::isActive)
                 .filter(found -> found.getPasswordHash() != null && passwordEncoder.matches(request.password(), found.getPasswordHash()))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."));
+                .orElseThrow(() -> ApiException.unauthorized("error.auth.invalidCredentials"));
         String role = user.getRole().name();
         return new LoginResponse(jwtTokenService.createToken(user.getEmail(), role), "Bearer",
                 jwtTokenService.expiresInSeconds(), role, user.getName());

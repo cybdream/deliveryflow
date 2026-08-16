@@ -122,6 +122,16 @@ class AuthOrderIntegrationTest {
                 .andExpect(jsonPath("$.content[0].orderNo").value("ORD-TEST-0002"));
     }
 
+    @Test
+    void loginFailureUsesEnglishMessageWhenRequested() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .header("Accept-Language", "en")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"admin@test.local\",\"password\":\"wrong-password\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.message").value("The email or password is incorrect."));
+    }
     private String login() throws Exception {
         String response = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

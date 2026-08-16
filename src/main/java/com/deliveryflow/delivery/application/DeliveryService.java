@@ -1,5 +1,6 @@
 package com.deliveryflow.delivery.application;
 
+import com.deliveryflow.common.api.ApiException;
 import com.deliveryflow.delivery.api.CreateDeliveryRequest;
 import com.deliveryflow.delivery.api.DeliveryHistoryResponse;
 import com.deliveryflow.delivery.api.DeliveryResponse;
@@ -17,114 +18,155 @@ import com.deliveryflow.user.domain.UserRepository;
 import com.deliveryflow.user.domain.UserRole;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Coordinates delivery assignment, status changes, history, and list queries.
+ */
 @Service
 @Transactional(readOnly = true)
 public class DeliveryService {
-    private static final Set<DeliveryStatus> DRIVER_CHANGEABLE_STATUSES =
-            EnumSet.of(DeliveryStatus.IN_DELIVERY, DeliveryStatus.DELIVERED, DeliveryStatus.ON_HOLD);
     private final DeliveryRepository deliveryRepository;
     private final DeliveryHistoryRepository deliveryHistoryRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final TrackingNumberGenerator trackingNumberGenerator;
+    private final DeliveryPermissionVerifier permissionVerifier;
 
-    public DeliveryService(DeliveryRepository deliveryRepository, DeliveryHistoryRepository deliveryHistoryRepository,
-            OrderRepository orderRepository, UserRepository userRepository) {
+    public DeliveryService(DeliveryRepository deliveryRepository,
+            DeliveryHistoryRepository deliveryHistoryRepository,
+            OrderRepository orderRepository,
+            UserRepository userRepository,
+            TrackingNumberGenerator trackingNumberGenerator,
+            DeliveryPermissionVerifier permissionVerifier) {
         this.deliveryRepository = deliveryRepository;
         this.deliveryHistoryRepository = deliveryHistoryRepository;
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.trackingNumberGenerator = trackingNumberGenerator;
+        this.permissionVerifier = permissionVerifier;
     }
 
+    /**
+     * Assigns an active driver to an order and records the initial delivery history.
+     */
     @Transactional
     public DeliveryResponse assign(CreateDeliveryRequest request) {
-        if (deliveryRepository.existsByOrderId(request.orderId())) {
-            throw new IllegalArgumentException("이미 배송이 배정된 주문입니다.");
-        }
-        Order order = orderRepository.findById(request.orderId())
-                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
-        User driver = userRepository.findById(request.driverId())
-                .filter(user -> user.getRole() == UserRole.DRIVER && user.isActive())
-                .orElseThrow(() -> new IllegalArgumentException("활성 상태의 배송 기사를 찾을 수 없습니다."));
-        Delivery savedDelivery = deliveryRepository.save(new Delivery(order, driver, request.scheduledDate(),
-                createTrackingNo(), LocalDateTime.now()));
-        deliveryHistoryRepository.save(new DeliveryHistory(savedDelivery, "ASSIGNED", null, DeliveryStatus.ASSIGNED,
-                "SYSTEM", null, savedDelivery.getAssignedAt()));
+        validateOrderIsNotAssigned(request.orderId());
+
+        // Look up only the order and driver that can participate in a new assignment.
+        Order order = findOrder(request.orderId());
+        User driver = findActiveDriver(request.driverId());
+
+        // A new assignment always receives its own internal tracking number.
+        Delivery delivery = new Delivery(order, driver, request.scheduledDate(),
+                trackingNumberGenerator.generate(), LocalDateTime.now());
+        Delivery savedDelivery = deliveryRepository.save(delivery);
+
+        saveAssignmentHistory(savedDelivery);
         return DeliveryResponse.from(savedDelivery);
     }
 
+    /**
+     * Applies a permitted status transition and stores the reason in delivery history.
+     */
     @Transactional
-    public DeliveryResponse updateStatus(Long deliveryId, UpdateDeliveryStatusRequest request, String actorEmail, boolean admin) {
-        Delivery delivery = deliveryRepository.findById(deliveryId)
-                .orElseThrow(() -> new IllegalArgumentException("배송 정보를 찾을 수 없습니다."));
-        verifyDeliveryAccess(delivery, actorEmail, admin);
-        verifyStatusChangePermission(request.status(), admin);
-        if (requiresReason(request.status()) && (request.reason() == null || request.reason().isBlank())) {
-            throw new IllegalArgumentException(request.status() + " 상태 변경에는 사유가 필요합니다.");
-        }
+    public DeliveryResponse updateStatus(Long deliveryId, UpdateDeliveryStatusRequest request,
+            String actorEmail, boolean admin) {
+        Delivery delivery = findDelivery(deliveryId);
+
+        // Authorization is checked before a driver can change a delivery state.
+        permissionVerifier.verifyDeliveryAccess(delivery, actorEmail, admin);
+        permissionVerifier.verifyStatusChangePermission(request.status(), admin);
+        validateRequiredReason(request);
+
         LocalDateTime changedAt = LocalDateTime.now();
         DeliveryStatus previousStatus = delivery.changeStatus(request.status(), changedAt);
-        deliveryHistoryRepository.save(new DeliveryHistory(delivery, "STATUS_CHANGED", previousStatus,
-                request.status(), actorEmail, request.reason(), changedAt));
+        saveStatusChangeHistory(delivery, previousStatus, request, actorEmail, changedAt);
+
         return DeliveryResponse.from(delivery);
     }
 
+    /**
+     * Returns the history of a delivery after verifying the caller can access it.
+     */
     public List<DeliveryHistoryResponse> findHistories(Long deliveryId, String actorEmail, boolean admin) {
-        if (!deliveryRepository.existsById(deliveryId)) {
-            throw new IllegalArgumentException("배송 정보를 찾을 수 없습니다.");
-        }
+        Delivery delivery = findDelivery(deliveryId);
+        permissionVerifier.verifyDeliveryAccess(delivery, actorEmail, admin);
+
         return deliveryHistoryRepository.findByDeliveryIdOrderByChangedAtAsc(deliveryId).stream()
-                .map(DeliveryHistoryResponse::from).toList();
+                .map(DeliveryHistoryResponse::from)
+                .toList();
     }
 
-    public Page<DeliveryResponse> findAll(DeliveryStatus status, Long driverId, LocalDate scheduledDate, Pageable pageable) {
+    /**
+     * Returns deliveries for administrators with optional search conditions.
+     */
+    public Page<DeliveryResponse> findAll(DeliveryStatus status, Long driverId,
+            LocalDate scheduledDate, Pageable pageable) {
         Specification<Delivery> specification = Specification.allOf(
                 DeliverySpecifications.hasStatus(status),
                 DeliverySpecifications.hasDriverId(driverId),
                 DeliverySpecifications.hasScheduledDate(scheduledDate));
+
         return deliveryRepository.findAll(specification, pageable).map(DeliveryResponse::from);
     }
 
-    public Page<DeliveryResponse> findMine(String email, DeliveryStatus status, LocalDate scheduledDate, Pageable pageable) {
+    /**
+     * Returns only the deliveries assigned to the logged-in driver.
+     */
+    public Page<DeliveryResponse> findMine(String email, DeliveryStatus status,
+            LocalDate scheduledDate, Pageable pageable) {
         Specification<Delivery> specification = Specification.allOf(
                 DeliverySpecifications.hasDriverEmail(email),
                 DeliverySpecifications.hasStatus(status),
                 DeliverySpecifications.hasScheduledDate(scheduledDate));
+
         return deliveryRepository.findAll(specification, pageable).map(DeliveryResponse::from);
     }
 
-    private String createTrackingNo() {
-        String prefix = "TRK-" + LocalDate.now().toString().replace("-", "") + "-";
-        for (int attempt = 0; attempt < 10; attempt++) {
-            String trackingNo = prefix + ThreadLocalRandom.current().nextInt(10_000_000, 100_000_000);
-            if (!deliveryRepository.existsByTrackingNo(trackingNo)) {
-                return trackingNo;
-            }
-        }
-        throw new IllegalStateException("운송장 번호를 생성하지 못했습니다.");
-    }
-
-    private void verifyDeliveryAccess(Delivery delivery, String actorEmail, boolean admin) {
-        if (!admin && !delivery.getDriver().getEmail().equals(actorEmail)) {
-            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,
-                    "본인에게 배정된 배송만 조회하거나 변경할 수 있습니다.");
+    private void validateOrderIsNotAssigned(Long orderId) {
+        if (deliveryRepository.existsByOrderId(orderId)) {
+            throw ApiException.businessRule("error.delivery.alreadyAssigned");
         }
     }
 
-    private void verifyStatusChangePermission(DeliveryStatus nextStatus, boolean admin) {
-        if (!admin && !DRIVER_CHANGEABLE_STATUSES.contains(nextStatus)) {
-            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,
-                    "배송 기사는 배송 시작, 완료, 보류 상태만 변경할 수 있습니다.");
+    private Order findOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> ApiException.businessRule("error.order.notFound"));
+    }
+
+    private User findActiveDriver(Long driverId) {
+        return userRepository.findById(driverId)
+                .filter(user -> user.getRole() == UserRole.DRIVER && user.isActive())
+                .orElseThrow(() -> ApiException.businessRule("error.driver.notFound"));
+    }
+
+    private Delivery findDelivery(Long deliveryId) {
+        return deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> ApiException.businessRule("error.delivery.notFound"));
+    }
+
+    private void validateRequiredReason(UpdateDeliveryStatusRequest request) {
+        if (requiresReason(request.status()) && (request.reason() == null || request.reason().isBlank())) {
+            throw ApiException.businessRule("error.delivery.reasonRequired", request.status());
         }
+    }
+
+    private void saveAssignmentHistory(Delivery delivery) {
+        deliveryHistoryRepository.save(new DeliveryHistory(delivery, "ASSIGNED", null,
+                DeliveryStatus.ASSIGNED, "SYSTEM", null, delivery.getAssignedAt()));
+    }
+
+    private void saveStatusChangeHistory(Delivery delivery, DeliveryStatus previousStatus,
+            UpdateDeliveryStatusRequest request, String actorEmail, LocalDateTime changedAt) {
+        deliveryHistoryRepository.save(new DeliveryHistory(delivery, "STATUS_CHANGED", previousStatus,
+                request.status(), actorEmail, request.reason(), changedAt));
     }
 
     private boolean requiresReason(DeliveryStatus status) {
