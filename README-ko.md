@@ -105,6 +105,8 @@ flowchart LR
 - [GitHub Actions 자동 테스트](docs/github-actions-ci-ko.md)
 - [Railway 배포 안내](docs/railway-deployment-ko.md)
 - [Railway 외부 검증 체크리스트](docs/railway-external-verification-ko.md)
+- [PowerShell 통합 테스트](docs/powershell-integration-test-ko.md)
+- [로컬 계정 비밀번호 재설정](docs/local-account-password-reset-ko.md)
 - [포트폴리오 소개](docs/portfolio-summary-ko.md)
 
 ## 실행 방법

@@ -55,7 +55,20 @@ Swagger UI에서 실제 Railway 배포 환경을 검증하는 절차입니다.
 - `GET /api/v1/deliveries/{deliveryId}/histories`: `ASSIGNED`, `STATUS_CHANGED` 이력
 - `GET /api/v1/dashboard/delivery-status`: 당일 상태 집계
 
+## 검증 결과
+
+2026-08-16에 Railway 배포 환경에서 다음 흐름을 모두 성공적으로 확인했습니다.
+
+- 공개 상태 확인 API와 Swagger UI 접근
+- 관리자 로그인, 주문 등록과 조회
+- 기사 배정
+- 기사 로그인, 본인 배송 목록 조회
+- `IN_DELIVERY`와 `DELIVERED` 상태 변경
+- 관리자 배송 이력과 당일 배송 현황 조회
+- PowerShell 통합 테스트 스크립트로 같은 전체 흐름 재검증
+
+테스트 데이터의 식별값, 비밀번호, JWT는 재사용되지 않는 운영 데이터이므로 문서에 기록하지 않습니다.
+
 ## 완료 기준
 
 주문 등록 → 기사 배정 → 기사 상태 변경 → 이력 및 대시보드 확인까지 모두 성공하면 핵심 운영 흐름의 외부 검증이 완료됩니다.
-
