@@ -15,7 +15,7 @@
 | JWT 인증 및 역할 권한 | - | 보호된 API 전체 |
 | 전체 배송 목록·검색 | `GET` | `/api/v1/deliveries` |
 | 내 배송 목록·검색 | `GET` | `/api/v1/deliveries/me` |
-| 배송 현황 대시보드 | `GET` | `/api/v1/dashboard/delivery-status` |
+| 배송 현황 대시보드 API·웹 화면 | `GET` | `/admin.html`, `/api/v1/dashboard/delivery-status` |
 | 고객 배송 조회 API·웹 화면 | GET | /, /api/v1/tracking/orders/{orderNo}, /api/v1/tracking/shipments/{trackingNo} |
 
 ## 상태 변경 예시

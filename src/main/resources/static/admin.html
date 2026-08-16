@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DeliveryFlow 관리자 배송 현황">
+  <title>DeliveryFlow | 관리자 대시보드</title>
+  <style>
+    :root { color-scheme: light; --navy:#12263f; --blue:#2563eb; --bg:#f4f7fb; --surface:#fff; --ink:#172033; --muted:#5e6b82; --line:#d8e0ec; --red:#b42318; --green:#087443; }
+    * { box-sizing:border-box; } body { margin:0; min-width:320px; color:var(--ink); background:var(--bg); font-family:"Malgun Gothic","Segoe UI",Arial,sans-serif; }
+    header { background:var(--navy); color:white; } .header-inner, main { width:min(100% - 32px, 980px); margin:0 auto; } .header-inner { min-height:74px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .brand { margin:0; font-size:1.25rem; font-weight:800; letter-spacing:-.02em; } .brand span { color:#93c5fd; } .user { font-size:.9rem; color:#dbeafe; }
+    main { padding:42px 0 64px; } h1 { margin:0; font-size:clamp(1.8rem,5vw,2.45rem); letter-spacing:-.04em; } .intro { margin:12px 0 28px; color:var(--muted); line-height:1.6; }
+    .panel { padding:clamp(22px,4vw,32px); background:var(--surface); border:1px solid var(--line); border-radius:18px; box-shadow:0 12px 30px rgba(18,38,63,.07); }
+    label { display:block; margin-bottom:8px; font-weight:700; font-size:.94rem; } input { width:100%; padding:13px 14px; border:1px solid #b9c5d6; border-radius:10px; color:var(--ink); font:inherit; } input:focus { outline:3px solid #bfdbfe; border-color:var(--blue); }
+    .field { margin-top:18px; } .field:first-child { margin-top:0; } .actions { display:flex; gap:10px; align-items:end; margin-top:22px; } button { padding:12px 16px; border:0; border-radius:10px; background:var(--blue); color:#fff; font:inherit; font-weight:800; cursor:pointer; } button:hover { background:#1d4ed8; } button.secondary { background:#e9eff8; color:#253858; } button.secondary:hover { background:#d8e3f2; } button:disabled { opacity:.65; cursor:wait; }
+    .toolbar { display:flex; flex-wrap:wrap; align-items:end; gap:12px; margin-bottom:26px; } .toolbar .date-field { width:min(100%, 220px); } .toolbar .spacer { flex:1; }
+    .summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-bottom:20px; } .card { min-height:112px; padding:18px; border:1px solid var(--line); border-radius:14px; background:#fff; } .card .label { color:var(--muted); font-size:.9rem; } .card strong { display:block; margin-top:8px; font-size:2rem; letter-spacing:-.05em; } .counter-card { width:100%; text-align:left; color:var(--ink); cursor:pointer; } .counter-card:hover, .counter-card:focus-visible { border-color:var(--blue); background:#eff6ff; outline:3px solid #bfdbfe; outline-offset:1px; } .counter-card .hint { display:block; margin-top:8px; color:var(--muted); font-size:.78rem; font-weight:400; }
+    .status-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; } .status-card { padding:17px; border-radius:14px; color:var(--ink); background:#f8fafc; border:1px solid var(--line); } .status-card .name { display:block; color:var(--muted); font-size:.85rem; } .status-card strong { display:block; margin-top:8px; font-size:1.65rem; }
+    .range-title { margin:28px 0 12px; font-size:1rem; } .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; } table { width:100%; min-width:680px; border-collapse:collapse; background:#fff; } th, td { padding:13px 14px; border-bottom:1px solid var(--line); text-align:right; font-size:.9rem; } th { color:var(--muted); background:#f8fafc; font-weight:700; } th:first-child, td:first-child { text-align:left; } tbody tr:last-child td { border-bottom:0; } tbody tr.today { background:#eff6ff; }    .notice { margin-top:20px; padding:14px 16px; border-radius:10px; line-height:1.5; } .notice.error { color:var(--red); border:1px solid #fecdca; background:#fef3f2; } .notice.info { color:#1e40af; border:1px solid #bfdbfe; background:#eff6ff; }
+    [hidden] { display:none !important; } .footer-note { margin-top:24px; color:var(--muted); font-size:.85rem; } @media (max-width:700px) { .summary { grid-template-columns:1fr; } .status-grid { grid-template-columns:repeat(2,1fr); } .actions { flex-wrap:wrap; } .header-inner { align-items:flex-start; padding:20px 0; } } 
+  </style>
+</head>
+<body>
+<header><div class="header-inner"><p class="brand">Delivery<span>Flow</span> 관리자</p><span id="user-name" class="user" hidden></span></div></header>
+<main>
+  <section id="login-view">
+    <h1>관리자 대시보드</h1>
+    <p class="intro">관리자 계정으로 로그인하면 기준일 전후 3일의 배송 현황을 함께 확인할 수 있습니다.</p>
+    <div class="panel">
+      <form id="login-form" novalidate>
+        <div class="field"><label for="email">관리자 이메일</label><input id="email" type="text" autocomplete="username" required placeholder="admin@deliveryflow.local"></div>
+        <div class="field"><label for="password">비밀번호</label><input id="password" type="password" autocomplete="current-password" required></div>
+        <div class="actions"><button id="login-button" type="submit">로그인</button></div>
+      </form>
+      <div id="login-error" class="notice error" role="alert" hidden></div>
+    </div>
+  </section>
+
+  <section id="dashboard-view" hidden>
+    <h1>배송 현황</h1>
+    <p class="intro">기준일 전 3일과 후 3일을 포함한 7일간의 배송 상태를 함께 집계합니다.</p>
+    <div class="panel">
+      <div class="toolbar">
+        <div class="date-field"><label for="scheduled-date">기준일</label><input id="scheduled-date" type="date"></div>
+        <div class="spacer"></div>
+        <button id="refresh-button" type="button">현황 새로고침</button>
+        <button id="logout-button" class="secondary" type="button">로그아웃</button>
+      </div>
+      <div class="summary">
+        <button class="card counter-card" type="button" data-filter="ALL"><span class="label">7일 전체 배송</span><strong id="total-count">-</strong><span class="hint">클릭해 상세 보기</span></button>
+        <button class="card counter-card" type="button" data-filter="DELIVERED"><span class="label">7일 배송 완료</span><strong id="delivered-count">-</strong><span class="hint">클릭해 상세 보기</span></button>
+        <button class="card counter-card" type="button" data-filter="IN_PROGRESS"><span class="label">7일 진행 중</span><strong id="in-progress-count">-</strong><span class="hint">클릭해 상세 보기</span></button>
+      </div>
+      <div class="status-grid">
+        <button class="status-card counter-card" type="button" data-filter="ASSIGNED"><span class="name">배정됨</span><strong id="assigned-count">-</strong><span class="hint">상세 보기</span></button>
+        <button class="status-card counter-card" type="button" data-filter="IN_DELIVERY"><span class="name">배송 중</span><strong id="in-delivery-count">-</strong><span class="hint">상세 보기</span></button>
+        <button class="status-card counter-card" type="button" data-filter="ON_HOLD"><span class="name">보류</span><strong id="on-hold-count">-</strong><span class="hint">상세 보기</span></button>
+        <button class="status-card counter-card" type="button" data-filter="DELIVERED"><span class="name">배송 완료</span><strong id="delivered-status-count">-</strong><span class="hint">상세 보기</span></button>
+        <button class="status-card counter-card" type="button" data-filter="CANCELLED"><span class="name">취소</span><strong id="cancelled-count">-</strong><span class="hint">상세 보기</span></button>
+      </div>
+      <h2 class="range-title">날짜별 배송 현황</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">배송 예정일</th><th scope="col">전체</th><th scope="col">배정됨</th><th scope="col">배송 중</th><th scope="col">보류</th><th scope="col">완료</th><th scope="col">취소</th></tr></thead>
+          <tbody id="daily-status-rows"></tbody>
+        </table>
+      </div>
+      <section id="details-section" hidden>
+        <h2 id="details-title" class="range-title">배송 상세 목록</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">예정일</th><th scope="col">주문번호</th><th scope="col">추적번호</th><th scope="col">기사</th><th scope="col">상태</th><th scope="col">배정 시각</th></tr></thead>
+            <tbody id="delivery-detail-rows"></tbody>
+          </table>
+        </div>
+        <div id="details-info" class="notice info" hidden></div>
+      </section>      <div id="dashboard-error" class="notice error" role="alert" hidden></div>
+      <div id="dashboard-info" class="notice info" hidden></div>
+    </div>
+    <p class="footer-note">로그인 정보는 이 브라우저 탭이 열려 있는 동안에만 유지됩니다.</p>
+  </section>
+</main>
+<script>
+  const tokenKey = 'deliveryflow_admin_token';
+  const nameKey = 'deliveryflow_admin_name';
+  const statuses = ['ASSIGNED', 'IN_DELIVERY', 'ON_HOLD', 'DELIVERED', 'CANCELLED'];
+  const statusLabels = { ASSIGNED:'배정됨', IN_DELIVERY:'배송 중', ON_HOLD:'보류', DELIVERED:'배송 완료', CANCELLED:'취소' };
+  const filterLabels = { ALL:'전체 배송', IN_PROGRESS:'진행 중', ASSIGNED:'배정됨', IN_DELIVERY:'배송 중', ON_HOLD:'보류', DELIVERED:'배송 완료', CANCELLED:'취소' };
+  const countElement = { ASSIGNED:'assigned-count', IN_DELIVERY:'in-delivery-count', ON_HOLD:'on-hold-count', DELIVERED:'delivered-status-count', CANCELLED:'cancelled-count' };
+  const loginView = document.querySelector('#login-view'); const dashboardView = document.querySelector('#dashboard-view'); const loginError = document.querySelector('#login-error'); const dashboardError = document.querySelector('#dashboard-error'); const dashboardInfo = document.querySelector('#dashboard-info');
+  const dateInput = document.querySelector('#scheduled-date'); const loginButton = document.querySelector('#login-button'); const refreshButton = document.querySelector('#refresh-button'); const detailsSection = document.querySelector('#details-section'); const detailsTitle = document.querySelector('#details-title'); const detailsInfo = document.querySelector('#details-info');
+  function toDateValue(date) { const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${date.getFullYear()}-${month}-${day}`; }
+  function localDate() { return toDateValue(new Date()); }
+  function dateRange(centerDate) { const base = new Date(`${centerDate}T00:00:00`); return Array.from({ length: 7 }, (_, index) => { const date = new Date(base); date.setDate(base.getDate() + index - 3); return toDateValue(date); }); }
+  function token() { return sessionStorage.getItem(tokenKey); }
+  function show(view) { loginView.hidden = view !== 'login'; dashboardView.hidden = view !== 'dashboard'; }
+  function showLoginError(message) { loginError.textContent = message; loginError.hidden = false; }
+  function showDashboardError(message) { dashboardError.textContent = message; dashboardError.hidden = false; dashboardInfo.hidden = true; }
+  function setLoading(loading) { refreshButton.disabled = loading; refreshButton.textContent = loading ? '불러오는 중…' : '현황 새로고침'; }
+  function updateUser() { const name = sessionStorage.getItem(nameKey); const userName = document.querySelector('#user-name'); userName.textContent = name ? `${name} 관리자` : ''; userName.hidden = !name; }
+  function countOf(report, status) { return (report.statusCounts || {})[status] || 0; }
+  function renderDailyRows(reports) { const body = document.querySelector('#daily-status-rows'); body.replaceChildren(); reports.forEach((report) => { const row = document.createElement('tr'); if (report.scheduledDate === dateInput.value) row.className = 'today'; const values = [report.scheduledDate, report.totalCount || 0, ...statuses.map((status) => countOf(report, status))]; values.forEach((value) => { const cell = document.createElement('td'); cell.textContent = value; row.append(cell); }); body.append(row); }); }
+  async function dashboardReport(scheduledDate) { const response = await fetch(`/api/v1/dashboard/delivery-status?scheduledDate=${encodeURIComponent(scheduledDate)}`, { headers: { Authorization: `Bearer ${token()}`, 'Accept-Language':'ko' } }); const data = await response.json().catch(() => ({})); if (!response.ok) { if (response.status === 401 || response.status === 403) throw new Error('로그인이 만료되었거나 관리자 권한이 없습니다. 다시 로그인해 주세요.'); throw new Error(data.message || '배송 현황을 불러오지 못했습니다.'); } return data; }
+  async function loadDashboard() { if (!token()) { show('login'); return; } setLoading(true); dashboardError.hidden = true; dashboardInfo.hidden = true; detailsSection.hidden = true; try { const reports = await Promise.all(dateRange(dateInput.value).map(dashboardReport)); const totals = Object.fromEntries(statuses.map((status) => [status, reports.reduce((sum, report) => sum + countOf(report, status), 0)])); statuses.forEach((status) => document.querySelector(`#${countElement[status]}`).textContent = totals[status]); document.querySelector('#total-count').textContent = reports.reduce((sum, report) => sum + (report.totalCount || 0), 0); document.querySelector('#delivered-count').textContent = totals.DELIVERED; document.querySelector('#in-progress-count').textContent = totals.ASSIGNED + totals.IN_DELIVERY + totals.ON_HOLD; renderDailyRows(reports); dashboardInfo.textContent = `${reports[0].scheduledDate}부터 ${reports[reports.length - 1].scheduledDate}까지의 배송 현황입니다.`; dashboardInfo.hidden = false; } catch (error) { showDashboardError(error.message || '배송 현황을 불러오는 중 문제가 발생했습니다.'); } finally { setLoading(false); } }
+  function filterMatches(filter, status) { return filter === 'ALL' || (filter === 'IN_PROGRESS' && ['ASSIGNED', 'IN_DELIVERY', 'ON_HOLD'].includes(status)) || filter === status; }
+  async function allDeliveriesForDate(scheduledDate) { const items = []; let page = 0; while (true) { const response = await fetch(`/api/v1/deliveries?scheduledDate=${encodeURIComponent(scheduledDate)}&page=${page}&size=100&sort=id,desc`, { headers: { Authorization: `Bearer ${token()}`, 'Accept-Language':'ko' } }); const data = await response.json().catch(() => ({})); if (!response.ok) { if (response.status === 401 || response.status === 403) throw new Error('로그인이 만료되었거나 관리자 권한이 없습니다. 다시 로그인해 주세요.'); throw new Error(data.message || '배송 상세 목록을 불러오지 못했습니다.'); } items.push(...(data.content || [])); if (data.last || (data.content || []).length === 0) return items; page += 1; } }
+  function renderDetails(deliveries, filter) { const body = document.querySelector('#delivery-detail-rows'); body.replaceChildren(); deliveries.forEach((delivery) => { const row = document.createElement('tr'); [delivery.scheduledDate, delivery.orderNo, delivery.trackingNo || '-', delivery.driverName, statusLabels[delivery.status] || delivery.status, delivery.assignedAt || '-'].forEach((value) => { const cell = document.createElement('td'); cell.textContent = value; row.append(cell); }); body.append(row); }); detailsTitle.textContent = `${filterLabels[filter]} 배송 상세 목록`; detailsInfo.textContent = `${deliveries.length}건을 표시합니다.`; detailsInfo.hidden = false; detailsSection.hidden = false; detailsSection.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  async function showDetails(filter) { if (!token()) { show('login'); return; } dashboardError.hidden = true; detailsSection.hidden = true; detailsInfo.hidden = true; try { const perDay = await Promise.all(dateRange(dateInput.value).map(allDeliveriesForDate)); const deliveries = perDay.flat().filter((delivery) => filterMatches(filter, delivery.status)); renderDetails(deliveries, filter); } catch (error) { showDashboardError(error.message || '배송 상세 목록을 불러오는 중 문제가 발생했습니다.'); } }
+  document.querySelector('#login-form').addEventListener('submit', async (event) => { event.preventDefault(); loginError.hidden = true; const email = document.querySelector('#email').value.trim(); const password = document.querySelector('#password').value; if (!email || !password) { showLoginError('이메일과 비밀번호를 모두 입력해 주세요.'); return; } loginButton.disabled = true; loginButton.textContent = '로그인 중…'; try { const response = await fetch('/api/v1/auth/login', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept-Language':'ko' }, body: JSON.stringify({ email, password }) }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.message || '이메일 또는 비밀번호가 올바르지 않습니다.'); if (data.role !== 'ADMIN') throw new Error('관리자 계정으로만 대시보드를 사용할 수 있습니다.'); sessionStorage.setItem(tokenKey, data.accessToken); sessionStorage.setItem(nameKey, data.name || '관리자'); updateUser(); show('dashboard'); await loadDashboard(); } catch (error) { showLoginError(error.message || '로그인 중 문제가 발생했습니다.'); } finally { loginButton.disabled = false; loginButton.textContent = '로그인'; } });
+  refreshButton.addEventListener('click', loadDashboard); dateInput.addEventListener('change', loadDashboard); document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => showDetails(button.dataset.filter))); document.querySelector('#logout-button').addEventListener('click', () => { sessionStorage.removeItem(tokenKey); sessionStorage.removeItem(nameKey); updateUser(); show('login'); document.querySelector('#password').value = ''; }); dateInput.value = localDate(); if (token()) { updateUser(); show('dashboard'); loadDashboard(); }
+</script>
+</body>
+</html>

@@ -145,9 +145,10 @@ try {
     }
 
     $runId = Get-Date -Format 'yyyyMMddHHmmss'
+    $testRecipientPhone = '010-9999-9999'
     $order = Invoke-DeliveryFlowApi -Method POST -Path '/api/v1/orders' -Headers $adminHeaders -Body @{
         recipientName = "API Test $runId"
-        recipientPhone = '010-9999-9999'
+        recipientPhone = $testRecipientPhone
         address = '서울특별시 중구 테스트로 1'
         requestedDate = $ScheduledDate
     }
@@ -182,14 +183,14 @@ try {
     Assert-Equal -Actual $delivered.status -Expected 'DELIVERED' -Description 'Failed to complete delivery'
     Write-Host '[7/9] Delivery status changed to DELIVERED.' -ForegroundColor Green
 
-    $trackingByOrder = Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/tracking/orders/$($order.orderNo)?recipientPhone=010-9999-9999"
+    $trackingByOrder = Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/tracking/orders/$($order.orderNo)?recipientPhone=$testRecipientPhone"
     Assert-Equal -Actual $trackingByOrder.orderNo -Expected $order.orderNo -Description 'Customer order-number tracking check failed'
     Assert-Equal -Actual $trackingByOrder.status -Expected 'DELIVERED' -Description 'Customer order-number tracking status check failed'
     if ([string]::IsNullOrWhiteSpace($trackingByOrder.trackingNo)) {
         throw 'A tracking number was not issued when the delivery was assigned.'
     }
 
-    $trackingByShipment = Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/tracking/shipments/$($trackingByOrder.trackingNo)?recipientPhone=010-9999-9999"
+    $trackingByShipment = Invoke-DeliveryFlowApi -Method GET -Path "/api/v1/tracking/shipments/$($trackingByOrder.trackingNo)?recipientPhone=$testRecipientPhone"
     Assert-Equal -Actual $trackingByShipment.orderNo -Expected $order.orderNo -Description 'Customer shipment-number tracking order check failed'
     Assert-Equal -Actual $trackingByShipment.trackingNo -Expected $trackingByOrder.trackingNo -Description 'Customer shipment-number tracking number check failed'
     Assert-Equal -Actual $trackingByShipment.status -Expected 'DELIVERED' -Description 'Customer shipment-number tracking status check failed'
@@ -209,6 +210,9 @@ try {
     [PSCustomObject]@{
         OrderId = $order.id
         OrderNo = $order.orderNo
+        TrackingNo = $trackingByOrder.trackingNo
+        RecipientPhone = $testRecipientPhone
+        ScheduledDate = $delivery.scheduledDate
         DeliveryId = $delivery.id
         FinalStatus = $delivered.status
         HistoryCount = $histories.Count

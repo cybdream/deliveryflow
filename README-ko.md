@@ -41,7 +41,7 @@ Railway 운영 환경에서 관리자 로그인, 주문 등록, 주문 조회까
 - 배송 기사 배정 및 재배정
 - 배송 상태 변경
 - 배송 이력 및 운영 메모 관리
-- 관리자 배송 현황 조회
+- 관리자 배송 현황 조회 API 및 웹 화면
 - 고객용 주문번호·운송장번호 배송 조회 API 및 웹 화면
 
 ## 배송 상태 흐름
@@ -108,6 +108,7 @@ flowchart LR
 - [표준 오류 응답](docs/error-response-ko.md)
 - [오류 메시지 언어 선택](docs/error-message-language-ko.md)
 - [운영 대시보드 API](docs/dashboard-api-ko.md)
+- [관리자 배송 현황 화면](docs/admin-dashboard-page-ko.md)
 - [Swagger와 Docker 실행](docs/swagger-and-docker-ko.md)
 - [GitHub Actions 자동 테스트](docs/github-actions-ci-ko.md)
 - [Railway 배포 안내](docs/railway-deployment-ko.md)
