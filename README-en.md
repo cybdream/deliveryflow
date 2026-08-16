@@ -15,6 +15,24 @@ The project modernizes previous delivery-reception domain experience with Spring
 - Health check: [https://deliveryflow-production.up.railway.app/api/v1/health](https://deliveryflow-production.up.railway.app/api/v1/health)
 
 The production deployment on Railway has been verified externally through administrator login, order creation, and order lookup.
+
+## User-facing Pages
+
+The project also provides focused web pages for each user group.
+
+| Audience | URL | Purpose |
+|---|---|---|
+| Customer | [Tracking page](https://deliveryflow-production.up.railway.app/) | Look up a delivery using an order number or tracking number plus recipient phone number |
+| Administrator | [Operations dashboard](https://deliveryflow-production.up.railway.app/admin.html) | Sign in and review a rolling seven-day delivery view and delivery details |
+| Operator / developer | [Swagger UI](https://deliveryflow-production.up.railway.app/swagger-ui/index.html) | Authenticate and inspect every API request and response |
+
+Customer tracking is public, but both an identifier and the recipient phone number must match. The administrator page stores its JWT only in tab-scoped `sessionStorage`; it never stores the password.
+
+### Screenshots
+
+| Customer tracking | Administrator dashboard login |
+|---|---|
+| ![Customer tracking page](docs/images/customer-tracking-page.png) | ![Administrator dashboard login page](docs/images/admin-dashboard-login.png) |
 ## Demo Accounts
 
 | Email | Role | Password |
@@ -38,6 +56,24 @@ Passwords are not published in the README because the deployed API permits data 
 - Delivery history and operational notes
 - Administrator delivery dashboard
 - Public delivery tracking
+
+## Role-based Flow
+
+```mermaid
+flowchart LR
+    C[Customer] --> T[Tracking page]
+    T --> P[Public tracking API]
+    A[Administrator] --> AD[Operations dashboard]
+    AD --> L[JWT login]
+    L --> O[Order, driver, and delivery APIs]
+    L --> D[Dashboard API]
+    DR[Driver] --> DL[My deliveries API]
+    DL --> S[Delivery status API]
+```
+
+- Customers see only the delivery details required for tracking.
+- Administrators receive the operational management and reporting permissions.
+- Drivers can access only deliveries assigned to them and can make only allowed status transitions.
 
 ## Delivery Status Flow
 
@@ -83,7 +119,9 @@ flowchart LR
 | 7 | Standardized error responses | Complete |
 | 8 | Operational dashboard | Complete |
 | 9 | Docker configuration and Swagger API documentation | Complete |
-| 5 | Tests, Docker, CI/CD, and deployment | Planned |
+| 10 | Integration tests, GitHub Actions CI, and Railway deployment | Complete |
+| 11 | Customer tracking and administrator dashboard pages | Complete |
+| 12 | Localized API errors and delivery-flow refactoring | Complete |
 
 ## Documentation
 
@@ -99,6 +137,7 @@ flowchart LR
 - [Swagger and Docker Setup (Korean)](docs/swagger-and-docker-ko.md)
 - [Railway External Verification Checklist (Korean)](docs/railway-external-verification-ko.md)
 - [Portfolio Summary (Korean)](docs/portfolio-summary-ko.md)
+- [Portfolio Presentation and Interview Notes (Korean)](docs/portfolio-presentation-ko.md)
 
 ## Running the Application
 
@@ -131,6 +170,6 @@ src/main/java/com/deliveryflow
 - Daily workload statistics by driver
 - Analysis of delivery-failure reasons
 - Notification capability
-- Customer-facing tracking UI
 - Deployment monitoring and log management
+- Flyway database schema versioning
 

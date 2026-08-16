@@ -15,6 +15,24 @@
 - 상태 확인: [https://deliveryflow-production.up.railway.app/api/v1/health](https://deliveryflow-production.up.railway.app/api/v1/health)
 
 Railway 운영 환경에서 관리자 로그인, 주문 등록, 주문 조회까지 외부 접속으로 검증했습니다.
+
+## 서비스 화면
+
+API뿐 아니라 각 사용자 관점에서 흐름을 확인할 수 있는 간단한 웹 화면도 제공합니다.
+
+| 대상 | 주소 | 할 수 있는 일 |
+|---|---|---|
+| 고객 | [배송 조회 화면](https://deliveryflow-production.up.railway.app/) | 주문번호 또는 배송 추적번호와 수령인 전화번호로 배송 상태 조회 |
+| 관리자 | [배송 현황 대시보드](https://deliveryflow-production.up.railway.app/admin.html) | 로그인 후 기준일 전후 3일을 포함한 7일 배송 현황과 상세 목록 조회 |
+| 운영·개발자 | [Swagger UI](https://deliveryflow-production.up.railway.app/swagger-ui/index.html) | 인증 후 API별 요청·응답 확인 |
+
+고객 조회는 로그인 없이 사용할 수 있지만, 조회번호와 수령인 전화번호가 모두 일치해야 합니다. 관리자 화면은 비밀번호를 저장하지 않고 JWT를 현재 브라우저 탭의 `sessionStorage`에만 보관합니다.
+
+### 화면 캡처
+
+| 고객 배송 조회 | 관리자 대시보드 로그인 |
+|---|---|
+| ![고객 배송 조회 화면](docs/images/customer-tracking-page.png) | ![관리자 대시보드 로그인 화면](docs/images/admin-dashboard-login.png) |
 ## 데모 계정
 
 | 이메일 | 역할 | 비밀번호 |
@@ -43,6 +61,24 @@ Railway 운영 환경에서 관리자 로그인, 주문 등록, 주문 조회까
 - 배송 이력 및 운영 메모 관리
 - 관리자 배송 현황 조회 API 및 웹 화면
 - 고객용 주문번호·운송장번호 배송 조회 API 및 웹 화면
+
+## 역할별 이용 흐름
+
+```mermaid
+flowchart LR
+    C[고객] --> T[배송 조회 화면]
+    T --> P[공개 배송 조회 API]
+    A[관리자] --> AD[관리자 대시보드]
+    AD --> L[JWT 로그인]
+    L --> O[주문·기사·배송 관리 API]
+    L --> D[배송 현황 API]
+    DR[배송 기사] --> DL[내 배송 목록 API]
+    DL --> S[배송 상태 변경 API]
+```
+
+- 고객은 주문번호 또는 배송 추적번호와 수령인 전화번호로 필요한 배송 정보만 조회합니다.
+- 관리자는 주문 접수, 기사 배정, 현황 확인을 수행합니다.
+- 배송 기사는 자신에게 배정된 배송만 조회하고 허용된 상태로만 변경할 수 있습니다.
 
 ## 배송 상태 흐름
 
@@ -90,6 +126,8 @@ flowchart LR
 | 9 | Docker와 Swagger API 문서화 | 완료 |
 | 10 | 통합 테스트와 GitHub Actions CI | 완료 |
 | 11 | Railway 운영 배포 설정 | 완료 |
+| 12 | 고객 배송 조회·관리자 대시보드 화면 | 완료 |
+| 13 | 오류 메시지 다국어 처리와 코드 리팩터링 | 완료 |
 
 ## 문서
 
@@ -116,6 +154,7 @@ flowchart LR
 - [PowerShell 통합 테스트](docs/powershell-integration-test-ko.md)
 - [로컬 계정 비밀번호 재설정](docs/local-account-password-reset-ko.md)
 - [포트폴리오 소개](docs/portfolio-summary-ko.md)
+- [포트폴리오 발표·면접 요약](docs/portfolio-presentation-ko.md)
 
 ## 실행 방법
 
@@ -145,7 +184,7 @@ src/main/java/com/deliveryflow
 
 ## 향후 개선 계획
 
+- Flyway를 이용한 데이터베이스 스키마 버전 관리
 - 배송 기사별 당일 업무량 통계
-- 배송 실패 사유 분석
-- 알림 기능
+- 배송 실패 사유 분석과 알림 기능
 - 배포 환경 모니터링 및 로그 관리

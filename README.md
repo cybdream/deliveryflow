@@ -19,10 +19,13 @@ An operations-focused delivery management API built with Spring Boot.
 - [오류 메시지 언어 선택](docs/error-message-language-ko.md)
 - [운영 대시보드 API](docs/dashboard-api-ko.md)
 - [Swagger와 Docker 실행](docs/swagger-and-docker-ko.md)
+- [고객 배송 조회 화면](docs/customer-tracking-page-ko.md)
+- [관리자 배송 현황 화면](docs/admin-dashboard-page-ko.md)
+- [포트폴리오 발표·면접 요약](docs/portfolio-presentation-ko.md)
 
 ## Status / 진행 상태
 
-Project setup, order management, driver management, delivery assignment, and delivery status/history APIs are complete. JWT login, request authentication, and role authorization are complete. Delivery list/search APIs are complete. Standardized error responses are complete. The operational dashboard is complete. Docker configuration and Swagger API documentation are complete.
+Project setup, order management, driver management, delivery assignment, and delivery status/history APIs are complete. JWT login, request authentication, and role authorization are complete. Delivery list/search APIs are complete. Standardized error responses are complete. The operational dashboard, customer tracking page, and administrator dashboard are complete. Docker configuration, Swagger API documentation, GitHub Actions CI, and Railway deployment are complete.
 
-프로젝트 설정, 주문 관리, 배송 기사 관리, 배송 배정, 배송 상태·이력 API 구현을 완료했습니다. JWT 로그인, 요청 인증, 역할 권한 관리를 구현했습니다. 배송 목록·검색 API를 구현했습니다. 표준 오류 응답을 구현했습니다. 운영 대시보드를 구현했습니다. Docker 구성과 Swagger API 문서화를 완료했습니다.
+프로젝트 설정, 주문 관리, 배송 기사 관리, 배송 배정, 배송 상태·이력 API 구현을 완료했습니다. JWT 로그인, 요청 인증, 역할 권한 관리를 구현했습니다. 배송 목록·검색 API를 구현했습니다. 표준 오류 응답을 구현했습니다. 운영 대시보드와 고객 배송 조회·관리자 화면을 구현했습니다. Docker 구성, Swagger API 문서, GitHub Actions CI, Railway 배포를 완료했습니다.
 
