@@ -23,6 +23,11 @@ Railway 운영 환경에서 관리자 로그인, 주문 등록, 주문 조회까
 | `driver@deliveryflow.local` | `DRIVER` | 공개하지 않음 |
 
 배포된 API의 데이터 변경을 방지하기 위해 비밀번호는 README에 게시하지 않습니다. 테스트 접근 정보는 요청 시 별도로 제공합니다.
+
+## 빠른 로컬 테스트
+
+다른 개발자가 Docker만으로 프로젝트를 실행하고 전체 주문·배송 흐름을 확인하는 방법은 [처음부터 로컬 테스트하기](docs/quick-start-local-test-ko.md)를 따릅니다.
+
 ## 프로젝트 목표
 
 - 주문 접수와 배송 기사 배정 업무를 API로 구현합니다.
@@ -85,13 +90,13 @@ flowchart LR
 | 9 | Docker와 Swagger API 문서화 | 완료 |
 | 10 | 통합 테스트와 GitHub Actions CI | 완료 |
 | 11 | Railway 운영 배포 설정 | 완료 |
-| 5 | 테스트·Docker·CI/CD 배포 | 진행 예정 |
 
 ## 문서
 
 - [프로젝트 한글 명세서](docs/deliveryflow-portfolio-spec-ko.md)
 - [Project Specification (English)](docs/deliveryflow-portfolio-spec-en.md)
 - [현재 상태와 다음 작업](docs/00-current-status-ko.md)
+- [처음부터 로컬 테스트하기](docs/quick-start-local-test-ko.md)
 - [개발 여정 - Markdown](docs/deliveryflow-development-journey-ko.md)
 - [개발 여정 - PDF](docs/deliveryflow-development-journey-ko-v2.pdf)
 - [구현 현황](docs/implementation-status-ko.md)
